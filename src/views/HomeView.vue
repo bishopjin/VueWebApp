@@ -13,6 +13,7 @@
 					cardIcon="mdi-database" 
 					:cardBody="content.inventory"
 					:btnObj="btnObj.inventory"
+					:isCardAction="true"
 				/>
 			</v-col>
 			<v-col md="4" cols="12" class="d-flex">
@@ -21,6 +22,7 @@
 					cardIcon="mdi-silverware" 
 					:cardBody="content.menuOrder"
 					:btnObj="btnObj.menuOrder"
+					:isCardAction="true"
 				/>
 			</v-col>
 			<v-col md="4" cols="12" class="d-flex">
@@ -29,6 +31,7 @@
 					cardIcon="mdi-monitor-dashboard" 
 					:cardBody="content.onlineExam"
 					:btnObj="btnObj.onlineExam"
+					:isCardAction="true"
 				/>
 			</v-col>
 		</v-row>
@@ -39,6 +42,7 @@
 					cardIcon="mdi-cash-multiple" 
 					:cardBody="content.payroll"
 					:btnObj="btnObj.payroll"
+					:isCardAction="true"
 				/>
 			</v-col>
 
@@ -84,34 +88,34 @@
 			btnObj: {
 				inventory: {
 					login: {
-						url: '#', label: 'Login'
+						url: '/inventory', label: 'Login'
 					}
 				},
 				menuOrder: {
 					customer: {
-						url: '#', label: 'Customer'
+						url: '/menuorder', label: 'Customer'
 					},
 					admin: {
-						url: '#', label: 'Maintenance'
+						url: '/menumaintenance', label: 'Maintenance'
 					}
 				},
 				onlineExam: {
 					student: {
-						url: '#', label: 'Student'
+						url: '/onlineexamStudent', label: 'Student'
 					},
 					faculty: {
-						url: '#', label: 'Faculty'
+						url: '/onlineexamFaculty', label: 'Faculty'
 					},
 					admin: {
-						url: '#', label: 'Admin'
+						url: '/onlineexamAdmin', label: 'Admin'
 					},
 				},
 				payroll: {
 					employee: {
-						url: '#', label: 'Employee'
+						url: '/payrollEmployee', label: 'Employee'
 					},
 					admin: {
-						url: '#', label: 'Admin'
+						url: '/payrollAdmin', label: 'Admin'
 					},
 				}
 			}
