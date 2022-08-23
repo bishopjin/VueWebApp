@@ -1,5 +1,3 @@
-
-
 const darkmode = {
 	state: () => ({
 		darkMode: false,

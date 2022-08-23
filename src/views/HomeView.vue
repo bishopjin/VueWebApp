@@ -1,60 +1,74 @@
 <template>
-	<v-container class="pt-4" fluid>
-		<v-row>
-			<v-col class="text-center">
-				<div class="text-md-h4 text-h5">Web Application</div>
-				<v-divider class="my-4"></v-divider>
-			</v-col>
-		</v-row>
-		<v-row>
-			<v-col md="4" cols="12" class="d-flex">
-				<HomeCardComponent 
-					cardTitle="Inventory System" 
-					cardIcon="mdi-database" 
-					:cardBody="content.inventory"
-					:btnObj="btnObj.inventory"
-					:isCardAction="true"
-				/>
-			</v-col>
-			<v-col md="4" cols="12" class="d-flex">
-				<HomeCardComponent 
-					cardTitle="Menu Ordering" 
-					cardIcon="mdi-silverware" 
-					:cardBody="content.menuOrder"
-					:btnObj="btnObj.menuOrder"
-					:isCardAction="true"
-				/>
-			</v-col>
-			<v-col md="4" cols="12" class="d-flex">
-				<HomeCardComponent 
-					cardTitle="Online Examination" 
-					cardIcon="mdi-monitor-dashboard" 
-					:cardBody="content.onlineExam"
-					:btnObj="btnObj.onlineExam"
-					:isCardAction="true"
-				/>
-			</v-col>
-		</v-row>
-		<v-row>
-			<v-col md="4" cols="12" class="d-flex">
-				<HomeCardComponent 
-					cardTitle="Payroll System" 
-					cardIcon="mdi-cash-multiple" 
-					:cardBody="content.payroll"
-					:btnObj="btnObj.payroll"
-					:isCardAction="true"
-				/>
-			</v-col>
+	<div>
+		<v-container class="pt-4" fluid>
+			<v-row>
+				<v-col class="text-center">
+					<div class="text-md-h4 text-h5">Web Application</div>
+					<v-divider class="my-4"></v-divider>
+				</v-col>
+			</v-row>
+			<v-row>
+				<v-col md="4" cols="12" class="d-flex">
+					<HomeCardComponent 
+						cardTitle="Inventory System" 
+						cardIcon="mdi-database" 
+						:cardBody="content.inventory"
+						:btnObj="btnObj.inventory"
+						:isCardAction="true"
+						@openOverlay="showLoading(true)"
+					/>
+				</v-col>
+				<v-col md="4" cols="12" class="d-flex">
+					<HomeCardComponent 
+						cardTitle="Menu Ordering" 
+						cardIcon="mdi-silverware" 
+						:cardBody="content.menuOrder"
+						:btnObj="btnObj.menuOrder"
+						:isCardAction="true"
+						@openOverlay="showLoading(true)"
+					/>
+				</v-col>
+				<v-col md="4" cols="12" class="d-flex">
+					<HomeCardComponent 
+						cardTitle="Online Examination" 
+						cardIcon="mdi-monitor-dashboard" 
+						:cardBody="content.onlineExam"
+						:btnObj="btnObj.onlineExam"
+						:isCardAction="true"
+						@openOverlay="showLoading(true)"
+					/>
+				</v-col>
+			</v-row>
+			<v-row>
+				<v-col md="4" cols="12" class="d-flex">
+					<HomeCardComponent 
+						cardTitle="Payroll System" 
+						cardIcon="mdi-cash-multiple" 
+						:cardBody="content.payroll"
+						:btnObj="btnObj.payroll"
+						:isCardAction="true"
+						@openOverlay="showLoading(true)"
+					/>
+				</v-col>
 
-		</v-row>
-	</v-container>
+			</v-row>
+		</v-container>
+		<!--  -->
+		<LoadingComponent :showOverlay="isLoading" caption="Getting Data"/>
+	</div>
 </template>
 
 <script>
 	import HomeCardComponent from '../components/HomeCardComponent.vue'
+	import LoadingComponent from '../components/LoadingComponent.vue'
+
 	export default	{
 		components: {
 			HomeCardComponent,
+			LoadingComponent,
+		},
+		created() {
+			this.$store.dispatch('setOverlay', false)
 		},
 		data: () => ({
 			content: {
@@ -88,43 +102,47 @@
 			btnObj: {
 				inventory: {
 					login: {
-						url: '/inventory', label: 'Login'
+						url: '/inventory', label: 'Login', access: 'user', application: 'inventory'
 					}
 				},
 				menuOrder: {
 					customer: {
-						url: '/menuorder', label: 'Customer'
+						url: '/menuorder', label: 'Customer', access: 'menu-none-admin', application: 'menuorder'
 					},
 					admin: {
-						url: '/menumaintenance', label: 'Maintenance'
+						url: '/menumaintenance', label: 'Maintenance', access: 'menu-admin', application: 'menuorder'
 					}
 				},
 				onlineExam: {
 					student: {
-						url: '/onlineexamStudent', label: 'Student'
+						url: '/onlineexamStudent', label: 'Student', access: 'online-student', application: 'onlineExam'
 					},
 					faculty: {
-						url: '/onlineexamFaculty', label: 'Faculty'
+						url: '/onlineexamFaculty', label: 'Faculty', access: 'online-faculty', application: 'onlineExam'
 					},
 					admin: {
-						url: '/onlineexamAdmin', label: 'Admin'
+						url: '/onlineexamAdmin', label: 'Admin', access: 'online-admin', application: 'onlineExam'
 					},
 				},
 				payroll: {
 					employee: {
-						url: '/payrollEmployee', label: 'Employee'
+						url: '/payrollEmployee', label: 'Employee', access: 'payroll-non-admin', application: 'payroll'
 					},
 					admin: {
-						url: '/payrollAdmin', label: 'Admin'
+						url: '/payrollAdmin', label: 'Admin', access: 'payroll-admin', application: 'payroll'
 					},
 				}
 			}
 		}),
 		methods: {
-			
+			showLoading(value) {
+				this.$store.dispatch('setOverlay', value)
+			}
 		},
 		computed: {
-			
+			isLoading() {
+				return this.$store.getters.getOverlay
+			}
 		}
 	}
 </script>

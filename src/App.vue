@@ -1,55 +1,63 @@
 <template>
 	<v-app>
 		<v-app-bar app>
-			<v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-			<v-app-bar-title class="title-width">{{ setAppBarTitle }}</v-app-bar-title>
+			<v-responsive content-class="d-flex justify-space-between align-baseline">
+				<v-responsive content-class="d-flex align-center">
+					<v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+					<v-app-bar-title>{{ setAppBarTitle }}</v-app-bar-title>
+				</v-responsive>
+				<div class="d-flex justify-space-between align-baseline">
+					<span class="ma-4">Welcome <b>{{ getUsersname }}</b></span>
+					<v-switch class="mx-auto" 
+						inset 
+						style="width: 110px;" 
+						v-model="darkmode"
+						prepend-icon="mdi-white-balance-sunny" 
+						append-icon="mdi-weather-night">
+					</v-switch>
+				</div>
+			</v-responsive>
 		</v-app-bar>
 
 		<v-navigation-drawer v-model="drawer" temporary fixed>
 			<v-list nav>
-				<v-list-item to="/">
+				<v-list-item to="/" v-if="isUserAuth">
 					<v-icon class="ma-2">mdi-home</v-icon>
 					Home
 				</v-list-item>
-				<v-list-item to="/login">
+				<v-list-item to="/login" v-if="showLoginLink">
 					<v-icon class="ma-2">mdi-login</v-icon>
 					Login
 				</v-list-item>
-				<v-list-item to="/register">
+				<v-list-item to="/register" v-if="showRegisterLink">
 					<v-icon class="ma-2">mdi-account-plus</v-icon>
 					Register
 				</v-list-item>
 				<!-- inventory -->
-				<v-list-item @click="selectTab('dashboard')">
+				<v-list-item @click="selectTab('dashboard')" v-if="showInventoryTab">
 					<v-icon class="ma-2">mdi-database</v-icon>
 					Inventory
 				</v-list-item>
-				<v-list-item @click="selectTab('addStock')">
+				<v-list-item @click="selectTab('addStock')" v-if="showInventoryTab">
 					<v-icon class="ma-2">mdi-database-plus</v-icon>
 					Add Stock
 				</v-list-item>
-				<v-list-item @click="selectTab('orderItem')">
+				<v-list-item @click="selectTab('orderItem')" v-if="showInventoryTab">
 					<v-icon class="ma-2">mdi-database-minus</v-icon>
 					Order Item
 				</v-list-item>
-				<v-list-item @click="selectTab('addItem')">
+				<v-list-item @click="selectTab('addItem')" v-if="showInventoryTab">
 					<v-icon class="ma-2">mdi-layers-plus</v-icon>
 					Add New Product
 				</v-list-item>
-				<v-list-item @click="selectTab('employeeLog')">
+				<v-list-item @click="selectTab('employeeLog')" v-if="showInventoryTab">
 					<v-icon class="ma-2">mdi-account-details</v-icon>
 					Employee Logs
 				</v-list-item>
 				<!-- End -->
-				<v-list-item to="/logout">
+				<v-list-item @click="logout" v-if="isUserAuth">
 					<v-icon class="ma-2">mdi-logout</v-icon>
 					Logout
-				</v-list-item>
-				<v-list-item>
-				<v-switch class="mx-auto" inset style="width: 110px;" v-model="darkmode"
-				prepend-icon="mdi-white-balance-sunny" append-icon="mdi-weather-night"
-				>
-				</v-switch>
 				</v-list-item>
 			</v-list>
 		</v-navigation-drawer>
@@ -111,9 +119,40 @@
 			selectTab(tabname) {
 				this.drawer = false
 				this.$store.dispatch('selectTab', tabname)
+			},
+			logout() {
+				this.$store.dispatch('logout', false)
 			}
 		},
 		computed: {
+			showLoginLink () {
+				let showLogin = false
+				if (!this.$store.getters.getUserAuthState) {
+					if (this.$route.name != 'login') {
+						showLogin = true
+					}
+				}
+				return showLogin
+			},
+			showRegisterLink () {
+				let showRegister = false
+				if (!this.$store.getters.getUserAuthState) {
+					if (this.$route.name != 'register') {
+						showRegister = true
+					}
+				}
+				return showRegister
+			},
+			isUserAuth() {
+				return this.$store.getters.getUserAuthState
+			},
+			getUsersname() {
+				let username = 'Guest'
+				if (this.$store.getters.getUserAuthState) {
+					username = this.$store.state.user.userInfo.username
+				}
+				return username
+			},
 			setAppBarTitle() {
 				let title
 				switch (this.$route.name) {
@@ -140,6 +179,15 @@
 				}
 				return title
 			},
+			showInventoryTab() {
+				let state = false
+				if (this.$route.name == 'inventory') {
+					state = true
+				}
+				this.$store.dispatch('setInventoryState', state)
+				
+				return this.$store.state.inventory.isInventory
+			},
 			footerLabel() {
 				return new Date().getFullYear() + ' - Gene Arthur Sedan'
 			},
@@ -148,7 +196,5 @@
 </script>
 
 <style scoped>
-	.title-width {
-		width: 300px;
-	}
+	
 </style>

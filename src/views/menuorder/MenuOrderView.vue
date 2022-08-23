@@ -229,7 +229,7 @@
 				let obj = {}
 
 				obj = {
-					btnShow: false, 
+					btnShow: this.$store.state.menu.isAdmin, 
 					btnLabel: 'Add Item', 
 					colLabel: 'Action',
 					item: [

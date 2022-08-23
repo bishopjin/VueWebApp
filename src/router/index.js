@@ -73,12 +73,14 @@ const router = new VueRouter({
 /* nav guard */
 router.beforeEach((to, from, next) => {
 	if (to.matched.some(record => record.meta.reqLogin)) {
-		if (!store.dispatch('getStoredToken')) {
+		store.dispatch('getStoredToken')
+		if (!store.state.user.userIsLoggedIn) {
 			next({
 				path: '/login',
 			})
 		}
 		else {
+			store.dispatch('getStoredUser')
 			next()
 		}
 	}

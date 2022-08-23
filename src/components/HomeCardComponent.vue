@@ -11,16 +11,14 @@
 			</div>
 			<div class="font-weight-bold">Log In as:</div>
 		</v-card-text>
-		<v-card-actions v-resize="checkScrSize" class="flex-md-row flex-column" v-if="isCardAction">
-			<v-btn text 
-				rounded 
+		<v-card-actions v-resize="checkScrSize" class="d-flex flex-md-row flex-column" v-if="isCardAction">
+			<v-btn text  
 				color="primary" 
 				:width="btnWidth" 
 				:class="btnClass" 
 				v-for="(btnItem, i) in btnObj" 
 				:key="i"
-				:to="btnItem.url"
-				:id="i"
+				@click="setAccess(btnItem.access, btnItem.url, btnItem.application)"
 			>{{ btnItem.label }}</v-btn>
 		</v-card-actions>
 	</v-card>
@@ -42,6 +40,41 @@
 		methods: {
 			checkScrSize() {
 				this.screenwidth = window.innerWidth
+			},
+			setAccess(access, url, app) {
+				switch(app) {
+					case 'menuorder':
+						if (access == 'menu-none-admin') {
+							this.$store.dispatch('selectMenuAccess', false)
+						}
+						else {
+							this.$store.dispatch('selectMenuAccess', true)
+						}
+						this.$router.push(url)
+						break
+					case 'onlineExam':
+						if (access == 'online-student') {
+							console.log('Student')
+						}
+						else if (access == 'online-faculty') {
+							console.log('Faculty')
+						}
+						else {
+							console.log('Admin')
+						}
+						break
+					case 'payroll':
+						if (access == 'payroll-non-admin') {
+							console.log('None admin')
+						}
+						else {
+							console.log('Admin')
+						}
+						break
+					default:
+						this.$store.dispatch('getItemInventory', url)
+				}
+				this.$emit('openOverlay')
 			}
 		},
 		computed: {
@@ -49,7 +82,7 @@
 				return Object.keys(this.btnObj).length > 1
 			},
 			btnWidth() {
-				return this.screenwidth < 1024 ? '100%' : ''
+				return this.screenwidth < 600 ? '100%' : ''
 			},
 			btnClass() {
 				return Object.keys(this.btnObj).length > 1 ? 'flex-grow-1 mb-md-0 mb-2 mx-1' : 'flex-grow-1 mb-md-0 mb-2 mx-1'
