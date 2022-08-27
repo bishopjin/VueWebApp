@@ -24,7 +24,7 @@
 						cardIcon="mdi-silverware" 
 						:cardBody="content.menuOrder"
 						:btnObj="btnObj.menuOrder"
-						:isCardAction="true"
+						:isCardAction="false"
 						@openOverlay="showLoading(true)"
 					/>
 				</v-col>
@@ -34,7 +34,7 @@
 						cardIcon="mdi-monitor-dashboard" 
 						:cardBody="content.onlineExam"
 						:btnObj="btnObj.onlineExam"
-						:isCardAction="true"
+						:isCardAction="false"
 						@openOverlay="showLoading(true)"
 					/>
 				</v-col>
@@ -46,7 +46,7 @@
 						cardIcon="mdi-cash-multiple" 
 						:cardBody="content.payroll"
 						:btnObj="btnObj.payroll"
-						:isCardAction="true"
+						:isCardAction="false"
 						@openOverlay="showLoading(true)"
 					/>
 				</v-col>
@@ -102,34 +102,66 @@
 			btnObj: {
 				inventory: {
 					login: {
-						url: '/inventory', label: 'Login', access: 'user', application: 'inventory'
+						url: '/inventory', 
+						label: 'Login', 
+						access: 'user', 
+						application: 'inventory',
+						isActive: true,
 					}
 				},
 				menuOrder: {
 					customer: {
-						url: '/menuorder', label: 'Customer', access: 'menu-none-admin', application: 'menuorder'
+						url: '/menuorder', 
+						label: 'Customer', 
+						access: 'menu-none-admin', 
+						application: 'menuorder',
+						isActive: true,
 					},
 					admin: {
-						url: '/menumaintenance', label: 'Maintenance', access: 'menu-admin', application: 'menuorder'
+						url: '/menumaintenance', 
+						label: 'Maintenance', 
+						access: 'menu-admin', 
+						application: 'menuorder',
+						isActive: true,
 					}
 				},
 				onlineExam: {
 					student: {
-						url: '/onlineexamStudent', label: 'Student', access: 'online-student', application: 'onlineExam'
+						url: '/onlineexamStudent', 
+						label: 'Student', 
+						access: 'online-student', 
+						application: 'onlineExam',
+						isActive: true,
 					},
 					faculty: {
-						url: '/onlineexamFaculty', label: 'Faculty', access: 'online-faculty', application: 'onlineExam'
+						url: '/onlineexamFaculty', 
+						label: 'Faculty', 
+						access: 'online-faculty', 
+						application: 'onlineExam',
+						isActive: true,
 					},
 					admin: {
-						url: '/onlineexamAdmin', label: 'Admin', access: 'online-admin', application: 'onlineExam'
+						url: '/onlineexamAdmin', 
+						label: 'Admin', 
+						access: 'online-admin', 
+						application: 'onlineExam',
+						isActive: true,
 					},
 				},
 				payroll: {
 					employee: {
-						url: '/payrollEmployee', label: 'Employee', access: 'payroll-non-admin', application: 'payroll'
+						url: '/payrollEmployee', 
+						label: 'Employee', 
+						access: 'payroll-non-admin', 
+						application: 'payroll',
+						isActive: true,
 					},
 					admin: {
-						url: '/payrollAdmin', label: 'Admin', access: 'payroll-admin', application: 'payroll'
+						url: '/payrollAdmin', 
+						label: 'Admin', 
+						access: 'payroll-admin', 
+						application: 'payroll',
+						isActive: true,
 					},
 				}
 			}

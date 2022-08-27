@@ -1,5 +1,5 @@
 import axios from 'axios'
-import router from '../../router'
+//import router from '../../router'
 
 const inventory = {
 	state: () => ({
@@ -65,40 +65,36 @@ const inventory = {
 		setInventoryState({commit}, val) {
 			commit('setInventory', val)
 		},
-		async getItemInventory({commit, dispatch, rootState}, nextUrl) {
+		async getItemInventory({commit, rootState, rootGetters}) {
+			let respObj = { allowed: false, msg: '' }
 			await axios({
 				method: 'GET', 
 				url: rootState.baseurl + 'inventory/index',
-				headers: {
-					Accepted: 'appication/json', 
-					'Content-Type': 'application/json', 
-					'Authorization': 'Bearer ' + localStorage.getItem('token') ?? 'lol',
-				}
+				headers: rootGetters.getHeaders,
 			})
 			.then(function (response) {
 				if (response.data.data.length) {
 					commit('setInventoryLinks', response.data.links)
 					commit('setInventoryData', JSON.stringify(response.data.data))
-					if (nextUrl) {
-						router.push({path: nextUrl})
-					}
+					respObj.allowed = true
 				}
-				dispatch('setOverlay', false)
+				else {
+					respObj.msg = response.data
+				}
 			})
 			.catch(function (error) {
-				console.log('error: ' + error.message)
+				respObj.msg = error.message
+				//console.log('error: ' + error.message)
 			});
+
+			return respObj
 		},
-		async nextPage({commit, dispatch}, url) {
+		async nextPage({commit, dispatch, rootGetters}, url) {
 			dispatch('setOverlay', true)
 			await axios({
 				method: 'GET', 
 				url: url,
-				headers: {
-					Accepted: 'appication/json', 
-					'Content-Type': 'application/json', 
-					'Authorization': 'Bearer ' + localStorage.getItem('token') ?? 'lol',
-				}
+				headers: rootGetters.getHeaders
 			})
 			.then(function (response) {
 				if (response.data.data.length) {
@@ -110,16 +106,12 @@ const inventory = {
 				console.log('error: ' + error.message)
 			});
 		},
-		async getItemDetails({commit, dispatch, rootState}, id) {
+		async getItemDetails({commit, dispatch, rootState, rootGetters}, id) {
 			dispatch('setOverlay', true)
 			await axios({
 				method: 'GET', 
 				url: rootState.baseurl + 'inventory/get/' + id,
-				headers: {
-					Accepted: 'appication/json', 
-					'Content-Type': 'application/json', 
-					'Authorization': 'Bearer ' + localStorage.getItem('token') ?? 'lol',
-				}
+				headers: rootGetters.getHeaders,
 			})
 			.then(function (response) {
 				if (response.data) {
@@ -133,22 +125,35 @@ const inventory = {
 				console.log(error)
 			});
 		},
-		async updateStock({dispatch, rootState}, item) {
+		async updateStock({dispatch, rootState, rootGetters}, item) {
 			let updated = false
 			dispatch('setOverlay', true)
 			await axios({
 				method: 'POST', 
 				url: rootState.baseurl + 'inventory/addStock/store',
 				data: { shoe_id: item[0], qty: item[1] },
-				headers: {
-					Accepted: 'appication/json', 
-					'Content-Type': 'application/json', 
-					'Authorization': 'Bearer ' + localStorage.getItem('token') ?? 'lol',
-				}
+				headers: rootGetters.getHeaders,
 			})
 			.then(response => {
 				updated = response.data
 				console.log(response.data)
+			})
+			.catch(error => {
+				console.log(error)
+			})
+			return updated
+		},
+		async getStock({dispatch, rootState, rootGetters}, order) {
+			let updated = false
+			dispatch('setOverlay', true)
+			await axios({
+				method: 'POST',
+				url: rootState.baseurl + 'inventory/getStock/store',
+				data: { shoe_id: order[0], qty: order[1] },
+				headers: rootGetters.getHeaders,
+			})
+			.then(response => {
+				updated = response.data
 			})
 			.catch(error => {
 				console.log(error)

@@ -3,11 +3,11 @@
 </IfModule>
 <IfModule mod_rewrite.c>
 	RewriteEngine On
-	RewriteBase /public/
-	RewriteRule ^index\.html$ - [L]
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule . /index.html [L]
+	RewriteBase /
+  	RewriteRule ^index\.html$ - [L]
+  	RewriteCond %{REQUEST_FILENAME} !-f
+  	RewriteCond %{REQUEST_FILENAME} !-d
+  	RewriteRule . /index.html [L]
 
 	# Forced Https
     #RewriteCond %{HTTP:X-Forwarded-Proto} !https [OR]
@@ -19,7 +19,7 @@
 	RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
 	# Redirect Trailing Slashes If Not A Folder...
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteCond %{REQUEST_URI} (.+)/$
-	RewriteRule ^ %1 [L,R=301]
+	#RewriteCond %{REQUEST_FILENAME} !-d
+	#RewriteCond %{REQUEST_URI} (.+)/$
+	#RewriteRule ^ %1 [L,R=301]
 </IfModule>

@@ -4,6 +4,11 @@
 			<v-icon class="ma-2">{{ cardIcon }}</v-icon> {{ cardTitle }}
 		</v-card-title>
 		<v-divider></v-divider>
+		<AlertComponent 
+				:message="alertMsg" 
+				:alertType="alertType" 
+				:isAlert="isAlert"
+				@alertClosed="closeAlert"/>
 		<v-card-text>
 			<div class="font-weight-bold">Feature:</div>
 			<div class="pa-2">
@@ -21,14 +26,25 @@
 				@click="setAccess(btnItem.access, btnItem.url, btnItem.application)"
 			>{{ btnItem.label }}</v-btn>
 		</v-card-actions>
+		<div v-else class="d-flex justify-center pb-2">
+			Not yet available
+		</div>
 	</v-card>
 </template>
 
 <script>
+	import AlertComponent from '../components/AlertComponent.vue'
+
 	export default {
+		components: {
+			AlertComponent,
+		},
 		name: 'HomeCardComponent',
 		data: () => ({
 			screenwidth: 0,
+			isAlert: false,
+			alertMsg: '',
+			alertType: 'warning',
 		}),
 		props: {
 			btnObj: new Object(),
@@ -38,6 +54,9 @@
 			cardBody: [],
 		},
 		methods: {
+			closeAlert() {
+				this.isAlert = false
+			},
 			checkScrSize() {
 				this.screenwidth = window.innerWidth
 			},
@@ -73,6 +92,16 @@
 						break
 					default:
 						this.$store.dispatch('getItemInventory', url)
+						.then(response => {
+							if (response.allowed) {
+								this.$router.push(url)
+							}
+							else {
+								this.isAlert = true
+								this.alertMsg = response.msg.includes('403') ? 'Not Authorize' : response.msg
+							}
+							this.$store.dispatch('setOverlay', false)
+						})
 				}
 				this.$emit('openOverlay')
 			}

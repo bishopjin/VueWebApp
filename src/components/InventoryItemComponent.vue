@@ -166,12 +166,12 @@
 							this.iType = obj.type.type
 							this.cat = obj.category.category
 							this.isItemExist = true
-							this.$store.dispatch('setOverlay', false)
 						}
 						else {
 							this.isAlert = true
 							this.alertMsg = 'Item code does not exist'
 						}
+						this.$store.dispatch('setOverlay', false)
 					})
 				}
 				else {
@@ -187,13 +187,16 @@
 			saveData() {
 				this.$store.dispatch('updateStock', [this.prodID, this.qty])
 				.then(response => {
+					this.alertType = 'error'
+					this.alertMsg = 'Failed'
+					
 					if (response) {
-						this.isAlert = true
 						this.alertType = 'success'
 						this.alertMsg = 'Successful'
-						this.validForm = false
-						this.$store.dispatch('setOverlay', false)
 					}
+					this.isAlert = true
+					this.validForm = false
+					this.$store.dispatch('setOverlay', false)
 				})
 			}
 		},

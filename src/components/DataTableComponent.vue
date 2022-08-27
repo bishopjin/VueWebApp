@@ -6,6 +6,7 @@
 			</v-text-field>
 
 			<v-data-table
+				class="elevation-15"
 				:headers="dtHeaders"
 				:items="inventory"
 				:items-per-page="inventory.length"

@@ -33,6 +33,7 @@
 					<v-icon class="ma-2">mdi-account-plus</v-icon>
 					Register
 				</v-list-item>
+				<v-divider></v-divider>
 				<!-- inventory -->
 				<v-list-item @click="selectTab('dashboard')" v-if="showInventoryTab">
 					<v-icon class="ma-2">mdi-database</v-icon>
@@ -55,6 +56,7 @@
 					Employee Logs
 				</v-list-item>
 				<!-- End -->
+				<v-divider></v-divider>
 				<v-list-item @click="logout" v-if="isUserAuth">
 					<v-icon class="ma-2">mdi-logout</v-icon>
 					Logout
@@ -149,7 +151,7 @@
 			getUsersname() {
 				let username = 'Guest'
 				if (this.$store.getters.getUserAuthState) {
-					username = this.$store.state.user.userInfo.username
+					username = this.$store.getters.getUser.username
 				}
 				return username
 			},

@@ -13,6 +13,7 @@
 						v-model="empID"
 						class="me-5"
 						label="Employee ID"
+						:rules="ruleEmpID"
 						readonly></v-text-field>
 					<v-text-field 
 						v-model="prodID"
@@ -77,14 +78,16 @@
 							<v-col md="4" cols="12">
 								<v-text-field 
 									v-model="qty"
-									label="Quantity"></v-text-field>
+									label="Quantity"
+									type="number"
+									:rules="ruleQty"></v-text-field>
 							</v-col>
 							<v-col md="4" cols="12" class="d-flex align-center">
-								<v-btn
-									text 
+								<v-btn 
 									block
 									color="primary"
 									@click="saveData"
+									:disabled="!validForm"
 									>Save</v-btn>
 							</v-col>
 						</v-row>
@@ -122,11 +125,20 @@
 			ruleProdID: [
 				v => !!v || 'Product ID is required',
 			],
+			ruleEmpID: [
+				v => !!v || 'Employee ID is required',
+			],
+			ruleQty: [
+				v => !!v || 'Quantity is required'
+			],
 		}),
+		created() {
+			this.empID = this.$store.getters.getUser.id
+		},
 		computed: {
 			isFormValid() {
 				return this.validForm && this.isItemExist
-			}
+			},
 		},
 		watch: {
 			prodID(val) {
@@ -140,20 +152,23 @@
 					this.$store.dispatch('getItemDetails', this.prodID).then(response => {
 						console.log(response)
 						if (this.$store.getters.getItems != '') {
+							//console.log(this.$store.getters.getItems)
 							let obj = JSON.parse(this.$store.getters.getItems)
 							this.prodID = obj.id
 							this.brand = obj.brand.brand
-							this.iSize = obj.size.size
+							this.size = obj.size.size
 							this.color = obj.color.color
-							this.iType = obj.type.type
-							this.cat = obj.category.category
+							this.type = obj.type.type
+							this.category = obj.category.category
+							this.price = obj.price 
+							this.stock = obj.in_stock
 							this.isItemExist = true
-							this.$store.dispatch('setOverlay', false)
 						}
 						else {
 							this.isAlert = true
 							this.alertMsg = 'Item code does not exist'
 						}
+						this.$store.dispatch('setOverlay', false)
 					})
 				}
 				else {
@@ -162,18 +177,19 @@
 				}
 			},
 			saveData() {
-				/*this.$store.dispatch('updateStock', [this.prodID, this.qty])
+				this.$store.dispatch('getStock', [this.prodID, this.qty])
 				.then(response => {
-					if (response) {
+					if (response > 0) {
 						this.isAlert = true
 						this.alertType = 'success'
 						this.alertMsg = 'Successful'
 						this.validForm = false
 						this.$store.dispatch('setOverlay', false)
 					}
-				})*/
+				})
 			},
 			closeAlert() {
+				this.prodID = ''
 				this.$refs.form.reset()
 				this.idEmpty = true
 				this.isAlert = false

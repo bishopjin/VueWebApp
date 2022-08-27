@@ -61,9 +61,18 @@
 		}),
 		methods: {
 			submit() {
-				let obj = {'username': this.username, 'password': this.password, 'origin': window.location.origin}
+				let obj = {
+					'username': this.username, 
+					'password': this.password, 
+					'origin': window.location.origin
+				}
+				
 				this.$store.dispatch('login', obj).then(resp => {
-					if (resp) {
+					this.$store.dispatch('setOverlay', false)
+					if (resp.id > 0) {
+						this.$router.push({name: 'home'})
+					}
+					else {
 						this.isAlert = true
 						this.alertMsg = resp.msg
 						this.alertType = resp.msgType

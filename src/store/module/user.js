@@ -4,7 +4,12 @@ import router from '../../router'
 const user = {
 	state: () => ({
 		userIsLoggedIn: false,
-		userInfo: {},
+		userInfo: {
+			username: '',
+			permission: [],
+			role: [],
+			id: 0,
+		},
 		token: '',
 	}),
 	mutations: {
@@ -16,14 +21,17 @@ const user = {
 		},
 		setUser(state, obj) {
 			state.userInfo.username = obj.username
-			state.userInfo.userType = obj.userType
-			state.userInfo.access = obj.access
+			state.userInfo.permission = obj.permission
+			state.userInfo.role = obj.role
+			state.userInfo.id = obj.id
 		},
 	},
 	actions: {
 		getStoredToken({commit}) {
 			let token = localStorage.getItem('token') ?? null
 			if (token) {
+				let usersInfo = localStorage.getItem('userDetail')
+				commit('setUser', JSON.parse(usersInfo))
 				commit('setToken', token)
 				commit('setLoginState', true)
 			}
@@ -32,8 +40,9 @@ const user = {
 			let userDet = localStorage.getItem('userDetail') ?? {}
 			commit('setUser', JSON.parse(userDet))
 		},
-		async login({commit, rootState}, cred) {
+		async login({commit, dispatch, rootState}, cred) {
 			let userDet = {}, respObj = {}
+			dispatch('setOverlay', true)
 			await axios({
 				method: 'POST', 
 				url: rootState.baseurl + 'login',
@@ -44,40 +53,39 @@ const user = {
 				}
 			})
 			.then(function (response) {
-				if (response.data.access == '1') {
+				if (response.data.id > 0) {
 					userDet.username = cred.username
-					userDet.userType = ''
-					userDet.access = ''
+					userDet.role = response.data.role
+					userDet.id = response.data.id
+					userDet.permission = response.data.permission
 
 					commit('setToken', response.data.token)
 					commit('setUser', userDet)
 					localStorage.setItem('userDetail', JSON.stringify(userDet))
 					localStorage.setItem('token', response.data.token)
-					router.push({name: 'home'})
+					respObj = { id: response.data.id, msgType: 'success', msg: 'Success'}
 				}
 				else {
-					respObj = { msgType: 'error', msg: response.data.token}
+					respObj = { id: response.data.id, msgType: 'error', msg: response.data.token}
 				}
 			})
 			.catch(function (error) {
+				respObj = { id: 0, msgType: 'error', msg: ''}
 				console.log('error: ' + error.message)
 			});
 
 			return respObj
 		},
-		async logout({commit, dispatch, rootState}, val) {
+		async logout({commit, rootState, rootGetters}, val) {
+			let respObj = {}
 			await axios({
 				method: 'POST', 
 				url: rootState.baseurl + 'logout',
-				headers: {
-					Accepted: 'appication/json', 
-					'Content-Type': 'application/json', 
-					'Authorization': 'Bearer ' + localStorage.getItem('token') ?? 'lol',
-				}
+				headers: rootGetters.getHeaders
 			})
 			.then(function (response) {
-				let obj = { msgType: 'success', msg: response.data.message}
-				dispatch('respMsg', obj, {root: true})
+				console.log(response)
+				respObj = { msgType: 'success', msg: response.data.token}
 				commit('setLoginState', val)
 				localStorage.removeItem('token')
 				router.push({name: 'login'})
@@ -85,11 +93,16 @@ const user = {
 			.catch(function (error) {
 				console.log('error: ' + error.message)
 			});
+
+			return respObj
 		}
 	},
 	getters: {
 		getUserAuthState(state) {
 			return state.userIsLoggedIn
+		},
+		getUser(state) {
+			return state.userInfo
 		}
 	}
 }

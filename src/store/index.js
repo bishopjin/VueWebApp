@@ -9,8 +9,10 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
 	state: {
-		baseurl: 'http://127.0.0.1:8000/api/',
+		baseurl: 'https://laravelwebapp.genesedan.com/api/', //'http://127.0.0.1:8000/api/',
 		overlayShow: false,
+		accepted: 'application/json',
+		reqType: 'application/json',
 	},
 	modules: {
 		darkmode,
@@ -31,6 +33,15 @@ export default new Vuex.Store({
 	getters: {
 		getOverlay(state) {
 			return state.overlayShow
-		}
+		},
+		getHeaders(state){
+			/* headers for rest api request */
+			let header = {
+				Accepted: state.accepted, 
+				'Content-Type': state.reqType, 
+				'Authorization': 'Bearer ' + localStorage.getItem('token') ?? 'lol',
+			}
+			return header
+		},
 	}
 })
