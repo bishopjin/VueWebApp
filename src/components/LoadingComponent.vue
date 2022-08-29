@@ -1,7 +1,7 @@
 <template>
-	<v-overlay 
+	<v-overlay
 		:value="showOverlay"
-		:opacity="0.1">
+		:opacity="0">
 		<v-card class="progress-width">
 			<v-card-text>
 				{{ caption }}
@@ -27,7 +27,7 @@
 
 <style scoped>
 	.progress-width {
-		width: 300px;
+		min-width: 300px;
 		font-weight: bold;
 	}
 </style>

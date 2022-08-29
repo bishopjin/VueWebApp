@@ -1,15 +1,23 @@
 <template>
 	<v-card elevation="15" shaped class="px-4 py-4">
-		<v-card-title>{{ dtTitle }}</v-card-title>
+		<v-card-title class="d-flex justify-space-between">
+			{{ dtTitle }}
+			<v-btn 
+				v-if="btnShow"
+				text
+				color="success"
+				@click="emitEvent"
+			>{{ btnLabel }}</v-btn>
+		</v-card-title>
 		<v-card-text>
-			<v-text-field v-model="search" label="Search Item" append-icon="mdi-magnify" class="searchItem pb-3">
+			<v-text-field v-model="search" label="Search Item" prepend-inner-icon="mdi-magnify" class="searchItem pb-3">
 			</v-text-field>
 
 			<v-data-table
 				class="elevation-15"
 				:headers="dtHeaders"
 				:items="inventory"
-				:items-per-page="inventory.length"
+				:items-per-page="perPage"
 				hide-default-footer
 				></v-data-table>
 
@@ -28,6 +36,8 @@
 <script>
 	export default {
 		props: {
+			btnShow: Boolean,
+			btnLabel: String,
 			dtTitle: String,
 			dtHeaders: [],
 			dtItems: {},
@@ -42,91 +52,100 @@
 			},
 			toLowerString(data) {
 				return data.toString().toLowerCase()
-			}
+			},
+			emitEvent() {
+				this.$emit('btnClicked')
+			},
 		},
 		computed: {
 			inventory() {
-				let dtData = this.dtItems.data.filter((row) => {
-						let key = [], searchKey = this.search.toLowerCase()
-						/* get the key */
-						Object.keys(row).forEach((k) => {
-							key.push(k)
+				let dtData = []
+				if (Object.keys(this.dtItems).length > 0) {
+					dtData = this.dtItems.data.filter((row) => {
+							let key = [], searchKey = this.search.toLowerCase()
+							/* get the key */
+							Object.keys(row).forEach((k) => {
+								key.push(k)
+							})
+
+							if (this.search != '') {
+								/* filter data per column, for now max only of 10 colum, NEED to OPTIMIZE */
+								if (key.length - 1 >= 0) {
+									if (this.toLowerString(row[key[0]]).charAt(0) == searchKey.charAt(0)) {
+										return this.toLowerString(row[key[0]]).match(searchKey)
+									}
+								}
+
+								if (key.length - 2 >= 0) {
+									if (this.toLowerString(row[key[1]]).charAt(0) == searchKey.charAt(0)) {
+										return this.toLowerString(row[key[1]]).match(searchKey)
+									}
+								}
+
+								if (key.length - 3 >= 0) {
+									if (this.toLowerString(row[key[2]]).charAt(0) == searchKey.charAt(0)) {
+										return this.toLowerString(row[key[2]]).match(searchKey)
+									}
+								}
+
+								if (key.length - 4 >= 0) {
+									if (this.toLowerString(row[key[3]]).charAt(0) == searchKey.charAt(0)) {
+										return this.toLowerString(row[key[3]]).match(searchKey)
+									}
+								}
+
+								if (key.length - 5 >= 0) {
+									if (this.toLowerString(row[key[4]]).charAt(0) == searchKey.charAt(0)) {
+										return this.toLowerString(row[key[4]]).match(searchKey)
+									}
+								}
+
+								if (key.length - 6 >= 0) {
+									if (this.toLowerString(row[key[5]]).charAt(0) == searchKey.charAt(0)) {
+										return this.toLowerString(row[key[5]]).match(searchKey)
+									}
+								}
+
+								if (key.length - 7 >= 0) {
+									if (this.toLowerString(row[key[6]]).charAt(0) == searchKey.charAt(0)) {
+										return this.toLowerString(row[key[6]]).match(searchKey)
+									}
+								}
+
+								if (key.length - 8 >= 0) {
+									if (this.toLowerString(row[key[7]]).charAt(0) == searchKey.charAt(0)) {
+										return this.toLowerString(row[key[7]]).match(searchKey)
+									}
+								}
+
+								if (key.length - 9 >= 0) {
+									if (this.toLowerString(row[key[8]]).charAt(0) == searchKey.charAt(0)) {
+										return this.toLowerString(row[key[8]]).match(searchKey)
+									}
+								}
+
+								if (key.length - 10 >= 0) {
+									if (this.toLowerString(row[key[9]]).charAt(0) == searchKey.charAt(0)) {
+										return this.toLowerString(row[key[9]]).match(searchKey)
+									}
+								}
+							}
+							else {
+								return row
+							}
+						
 						})
-
-						if (this.search != '') {
-							/* filter data per column, for now max only of 10 colum, NEED to OPTIMIZE */
-							if (key.length - 1 >= 0) {
-								if (this.toLowerString(row[key[0]]).charAt(0) == searchKey.charAt(0)) {
-									return this.toLowerString(row[key[0]]).match(searchKey)
-								}
-							}
-
-							if (key.length - 2 >= 0) {
-								if (this.toLowerString(row[key[1]]).charAt(0) == searchKey.charAt(0)) {
-									return this.toLowerString(row[key[1]]).match(searchKey)
-								}
-							}
-
-							if (key.length - 3 >= 0) {
-								if (this.toLowerString(row[key[2]]).charAt(0) == searchKey.charAt(0)) {
-									return this.toLowerString(row[key[2]]).match(searchKey)
-								}
-							}
-
-							if (key.length - 4 >= 0) {
-								if (this.toLowerString(row[key[3]]).charAt(0) == searchKey.charAt(0)) {
-									return this.toLowerString(row[key[3]]).match(searchKey)
-								}
-							}
-
-							if (key.length - 5 >= 0) {
-								if (this.toLowerString(row[key[4]]).charAt(0) == searchKey.charAt(0)) {
-									return this.toLowerString(row[key[4]]).match(searchKey)
-								}
-							}
-
-							if (key.length - 6 >= 0) {
-								if (this.toLowerString(row[key[5]]).charAt(0) == searchKey.charAt(0)) {
-									return this.toLowerString(row[key[5]]).match(searchKey)
-								}
-							}
-
-							if (key.length - 7 >= 0) {
-								if (this.toLowerString(row[key[6]]).charAt(0) == searchKey.charAt(0)) {
-									return this.toLowerString(row[key[6]]).match(searchKey)
-								}
-							}
-
-							if (key.length - 8 >= 0) {
-								if (this.toLowerString(row[key[7]]).charAt(0) == searchKey.charAt(0)) {
-									return this.toLowerString(row[key[7]]).match(searchKey)
-								}
-							}
-
-							if (key.length - 9 >= 0) {
-								if (this.toLowerString(row[key[8]]).charAt(0) == searchKey.charAt(0)) {
-									return this.toLowerString(row[key[8]]).match(searchKey)
-								}
-							}
-
-							if (key.length - 10 >= 0) {
-								if (this.toLowerString(row[key[9]]).charAt(0) == searchKey.charAt(0)) {
-									return this.toLowerString(row[key[9]]).match(searchKey)
-								}
-							}
-						}
-						else {
-							return row
-						}
-					
-					})
+				}
 				return dtData
 			},
 			links() {
 				return this.dtItems.links
 			},
 			linkLength() {
-				return this.dtItems.links.length - 2
+				return Object.keys(this.dtItems).length > 0 ? this.dtItems.links.length - 2 : 1
+			},
+			perPage() {
+				return this.dtItems ? this.inventory.length : 0
 			}
 		}
 	}

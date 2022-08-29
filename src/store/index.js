@@ -13,6 +13,8 @@ export default new Vuex.Store({
 		overlayShow: false,
 		accepted: 'application/json',
 		reqType: 'application/json',
+		token: '',
+		userIsLoggedIn: false,
 	},
 	modules: {
 		darkmode,
@@ -23,14 +25,32 @@ export default new Vuex.Store({
 	mutations: {
 		setOverlayState(state, value) {
 			state.overlayShow = value
+		},
+		setHeaderToken(state, tkn) {
+			state.token = tkn
+		},
+		setUserLoginState(state, isLogin) {
+			state.userIsLoggedIn = isLogin
 		}
 	},
 	actions: {
 		setOverlay({commit}, value) {
 			commit('setOverlayState', value)
+		},
+		changeToken({commit}) {
+			if (localStorage.getItem('token')) {
+				commit('setHeaderToken', localStorage.getItem('token'))
+				commit('setUserLoginState', true)
+			}
+			else {
+				commit('setUserLoginState', false)
+			}
 		}
 	},
 	getters: {
+		getUserAuthState(state) {
+			return state.userIsLoggedIn
+		},
 		getOverlay(state) {
 			return state.overlayShow
 		},
@@ -39,7 +59,7 @@ export default new Vuex.Store({
 			let header = {
 				Accepted: state.accepted, 
 				'Content-Type': state.reqType, 
-				'Authorization': 'Bearer ' + localStorage.getItem('token') ?? 'lol',
+				'Authorization': 'Bearer ' + state.token,
 			}
 			return header
 		},

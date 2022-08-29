@@ -71,6 +71,7 @@
 					this.$store.dispatch('setOverlay', false)
 					if (resp.id > 0) {
 						this.$router.push({name: 'home'})
+						this.$store.dispatch('changeToken')
 					}
 					else {
 						this.isAlert = true

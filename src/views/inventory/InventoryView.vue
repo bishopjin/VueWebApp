@@ -4,7 +4,7 @@
 			<v-row>
 				<v-col>
 					<InventoryItemComponent
-						v-if="isAddstock" 
+						v-if="isAddStock" 
 						cardName="Add Item Stock"
 						:isAddItem="false"
 					/>
@@ -13,17 +13,16 @@
 						cardName="New Item"
 						:isAddItem="true"
 					/>
-					<template v-else-if="isOrderItem">
-						<InventoryOrderComponent/>
-						<DataTableComponent
-							class="mt-3"
-							dtTitle="Order Summary" 
-							:dtHeaders="headers" 
-							:dtItems="items"/>
-					</template>
+					<InventoryOrderComponent
+						v-else-if="isOrderItem"
+					/>
+					<EmployeeLogsComponent
+						v-else-if="isEmployeeLogs"
+					/>
 					<DataTableComponent
 						v-else
 						dtTitle="Item Inventory" 
+						:btnShow="false"
 						:dtHeaders="headers" 
 						:dtItems="items"
 					/>
@@ -40,6 +39,7 @@
 	import InventoryItemComponent from '../../components/InventoryItemComponent.vue'
 	import LoadingComponent from '../../components/LoadingComponent.vue'
 	import InventoryOrderComponent from '../../components/InventoryOrderComponent.vue'
+	import EmployeeLogsComponent from '../../components/EmployeeLogsComponent.vue'
 
 	export default {
 		components: {
@@ -47,6 +47,7 @@
 			InventoryItemComponent,
 			LoadingComponent,
 			InventoryOrderComponent,
+			EmployeeLogsComponent,
 		},
 		data: () => ({
 			dashboard: false,
@@ -65,26 +66,20 @@
 		methods: {
 			
 		},
+		created() {
+			this.$store.dispatch('selectTab', 'dashboard')
+		},
 		computed: {
 			isLoading() {
 				return this.$store.getters.getOverlay
-			},
-			isAddstock() {
-				return this.$store.state.inventory.addStock
-			},
-			isAddItem() {
-				return this.$store.state.inventory.addItem
-			},
-			isOrderItem() {
-				return this.$store.state.inventory.orderItem
 			},
 			headers() {
 				return this.theaders
 			},
 			items() {
-				let obj = {}, data = [], dataObj = {},
-					dtData = JSON.parse(this.$store.state.inventory.inventory.data)
-				if (dtData) {
+				let obj = {}, data = [], dataObj = {}, dtData = []
+				if (this.$store.getters.getInventoryItems.data != '') {
+					dtData = JSON.parse(this.$store.getters.getInventoryItems.data)
 					dtData.forEach((row) => {
 						dataObj.prodid = row.id
 						dataObj.brand = row.brand.brand
@@ -100,9 +95,21 @@
 						dataObj = {}
 					})
 					obj.data = data
-					obj.links = this.$store.state.inventory.inventory.links
+					obj.links = this.$store.getters.getInventoryItems.links
 				}
 				return obj
+			},
+			isAddItem() {
+				return this.$store.getters.setAddItem
+			},
+			isAddStock() {
+				return this.$store.getters.setAddStock
+			},
+			isOrderItem() {
+				return this.$store.getters.setOrderItem
+			},
+			isEmployeeLogs() {
+				return this.$store.getters.setEmpLog
 			}
 		}
 	}

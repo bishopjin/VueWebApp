@@ -6,16 +6,7 @@
 					<v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 					<v-app-bar-title>{{ setAppBarTitle }}</v-app-bar-title>
 				</v-responsive>
-				<div class="d-flex justify-space-between align-baseline">
-					<span class="ma-4">Welcome <b>{{ getUsersname }}</b></span>
-					<v-switch class="mx-auto" 
-						inset 
-						style="width: 110px;" 
-						v-model="darkmode"
-						prepend-icon="mdi-white-balance-sunny" 
-						append-icon="mdi-weather-night">
-					</v-switch>
-				</div>
+				<span class="ma-4">Welcome <b>{{ getUsersname }}</b></span>
 			</v-responsive>
 		</v-app-bar>
 
@@ -56,11 +47,19 @@
 					Employee Logs
 				</v-list-item>
 				<!-- End -->
-				<v-divider></v-divider>
+				<v-divider v-if="showInventoryTab"></v-divider>
 				<v-list-item @click="logout" v-if="isUserAuth">
 					<v-icon class="ma-2">mdi-logout</v-icon>
 					Logout
 				</v-list-item>
+				<v-divider></v-divider>
+				<v-switch class="mx-auto darkmode-width align-baseline" 
+					inset 
+					dense
+					v-model="darkmode"
+					prepend-icon="mdi-white-balance-sunny" 
+					append-icon="mdi-weather-night">
+				</v-switch>
 			</v-list>
 		</v-navigation-drawer>
 
@@ -89,7 +88,7 @@
 					</a>
 				</div>
 				<div class="text-md-subtitle-2 text-subtitle-2 pt-2">
-					Published: 
+					Last Updated: August 29, 2022
 				</div>
 			</div>
 		</v-footer>
@@ -109,6 +108,7 @@
 		created() {
 			this.$store.dispatch('getStoredDarkState')
 			this.darkmode = this.$store.state.darkmode.darkMode
+			this.$store.dispatch('changeToken')
 		},
 		watch: {
 			darkmode(newval) {
@@ -123,7 +123,7 @@
 				this.$store.dispatch('selectTab', tabname)
 			},
 			logout() {
-				this.$store.dispatch('logout', false)
+				this.$store.dispatch('logout')
 			}
 		},
 		computed: {
@@ -198,5 +198,7 @@
 </script>
 
 <style scoped>
-	
+	.darkmode-width {
+		width: 105px;
+	}
 </style>

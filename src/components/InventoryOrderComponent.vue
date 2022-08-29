@@ -1,32 +1,29 @@
 <template>
 	<div>
 		<v-card elevation="15" shaped class="px-5 py-5">
-			<AlertComponent 
-				:message="alertMsg" 
-				:alertType="alertType" 
-				:isAlert="isAlert"
-				@alertClosed="closeAlert"/>
-			<v-card-title>Order Item</v-card-title>
+			<div class="d-flex justify-center">
+				<AlertComponent 
+					:message="alertMsg" 
+					:alertType="alertType" 
+					:isAlert="isAlert"
+					@alertClosed="closeAlert"/>
+			</div>				
+			<v-card-title class="justify-space-between">
+				Order Item 
+				<span>Employee ID: <u>{{ empID }}</u></span>
+			</v-card-title>
 			<v-card-text>
-				<div class="d-flex align-baseline">
-					<v-text-field 
-						v-model="empID"
-						class="me-5"
-						label="Employee ID"
-						:rules="ruleEmpID"
-						readonly></v-text-field>
-					<v-text-field 
-						v-model="prodID"
-						label="Product ID"
-						:rules="ruleProdID"></v-text-field>
-					<v-btn 
-						text 
-						color="success"
-						:disabled="idEmpty"
-						@click="searchItem">Search</v-btn>
-				</div>
+				
+				<v-text-field 
+					v-model="prodID"
+					label="Product ID"
+					required
+					class="search-box"
+					append-icon="mdi-magnify"
+					@click:append="searchItem"
+					:rules="ruleProdID"></v-text-field>
 				<!--  -->
-				<v-form v-model="validForm" ref="form">
+				<v-form v-model="validForm" ref="form" :disabled="!isItemExist">
 					<v-container>
 						<v-row>
 							<v-col md="4" cols="12">
@@ -80,6 +77,7 @@
 									v-model="qty"
 									label="Quantity"
 									type="number"
+									required
 									:rules="ruleQty"></v-text-field>
 							</v-col>
 							<v-col md="4" cols="12" class="d-flex align-center">
@@ -87,7 +85,7 @@
 									block
 									color="primary"
 									@click="saveData"
-									:disabled="!validForm"
+									:disabled="!isValidForm"
 									>Save</v-btn>
 							</v-col>
 						</v-row>
@@ -95,15 +93,23 @@
 				</v-form>
 			</v-card-text>
 		</v-card>
+		<DataTableComponent
+			class="mt-3"
+			:btnShow="false"
+			dtTitle="Order Summary" 
+			:dtHeaders="orderTHeader" 
+			:dtItems="orderItems"/>
 	</div>
 </template>
 
 <script>
 	import AlertComponent from '../components/AlertComponent.vue'
+	import DataTableComponent from '../components/DataTableComponent.vue'
 
 	export default {
 		components: {
 			AlertComponent,
+			DataTableComponent,
 		},
 		data: () => ({
 			empID: '',
@@ -121,7 +127,7 @@
 			alertType: 'warning',
 			validForm: false,
 			isItemExist: false,
-			idEmpty: true,
+			clearForm: false,
 			ruleProdID: [
 				v => !!v || 'Product ID is required',
 			],
@@ -131,23 +137,81 @@
 			ruleQty: [
 				v => !!v || 'Quantity is required'
 			],
+			orderHeaders: [
+				{ text: 'Order Number', value: 'ordNum' },
+				{ text: 'Item ID', value: 'itemID' },
+				{ text: 'Brand', value: 'brand' },
+				{ text: 'Size', value: 'size' },
+				{ text: 'Color', value: 'color' },
+				{ text: 'Type', value: 'type' },
+				{ text: 'Category', value: 'category' },
+				{ text: 'Price', value: 'price' },
+				{ text: 'Quantity', value: 'qty' },
+				{ text: 'Total Cost', value: 'tCost' },
+			],
 		}),
 		created() {
 			this.empID = this.$store.getters.getUser.id
+
+			this.$store.dispatch('setOverlay', true)
+			this.$store.dispatch('getOrderInventory')
+			.then(response => { 
+				console.log(response.allowed)
+				this.$store.dispatch('setOverlay', false)
+			})
 		},
 		computed: {
-			isFormValid() {
+			isValidForm() {
 				return this.validForm && this.isItemExist
 			},
+			orderTHeader() {
+				return this.orderHeaders
+			},
+			orderItems() {
+				let obj = {}, data = [], dataObj = {}, dtData = []
+				if (this.$store.getters.getOrderItems.data != '') {
+					dtData = JSON.parse(this.$store.getters.getOrderItems.data)
+					if (dtData) {
+						dtData.forEach((row) => {
+							dataObj.ordNum = row.order_number
+							dataObj.itemID = row.inventory_item_shoe_id
+							dataObj.brand = row.shoe.brand.brand
+							dataObj.size = row.shoe.size.size
+							dataObj.color = row.shoe.color.color
+							dataObj.type = row.shoe.type.type
+							dataObj.category = row.shoe.category.category
+							dataObj.price = row.shoe.price
+							dataObj.qty = row.qty
+							dataObj.tCost = parseInt(row.qty) * parseInt(row.shoe.price)
+							/* push the new object into array */
+							data.push(dataObj)
+							/* reset object */
+							dataObj = {}
+						})
+						obj.data = data
+						obj.links = this.$store.getters.getOrderItems.links
+					}
+				}
+				return obj
+			}
 		},
 		watch: {
-			prodID(val) {
-				this.idEmpty = val == '' ? true : false
+			qty(val) {
+				let formState = true
+				if (parseInt(val) > parseInt(this.stock)) {
+					this.isAlert = true
+					this.alertMsg = 'Ordered quantity is greater than existing item stock.'
+					formState = false
+				}
+				this.validForm = formState
+				this.clearForm = false
 			}
 		},
 		methods: {
 			searchItem() {
 				this.alertType = 'warning'
+				this.clearForm = true
+			
 				if (this.prodID) {
 					this.$store.dispatch('getItemDetails', this.prodID).then(response => {
 						console.log(response)
@@ -179,25 +243,43 @@
 			saveData() {
 				this.$store.dispatch('getStock', [this.prodID, this.qty])
 				.then(response => {
+					this.isAlert = true
+					this.clearForm = true
+
 					if (response > 0) {
-						this.isAlert = true
 						this.alertType = 'success'
 						this.alertMsg = 'Successful'
-						this.validForm = false
-						this.$store.dispatch('setOverlay', false)
 					}
+					else {
+						this.alertType = 'error'
+						this.alertMsg = 'Failed' 
+						console.log(response.data)
+					}
+					/* refresh data of datatable */
+					this.$store.dispatch('getOrderInventory')
+					this.$store.dispatch('setOverlay', false)
 				})
 			},
 			closeAlert() {
-				this.prodID = ''
-				this.$refs.form.reset()
-				this.idEmpty = true
 				this.isAlert = false
+				if (this.clearForm) {
+					this.$refs.form.reset()
+					this.validForm = false
+					this.isItemExist = false
+				} 
+				this.clearForm = false
 			},
 		},
 	}
 </script>
 
 <style scoped>
-	
+	.search-box {
+		width: 40%;
+	}
+	@media only screen and (max-width: 600px) {
+		.search-box {
+			width: 100%;
+		}
+	}
 </style>

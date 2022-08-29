@@ -7,7 +7,7 @@
 		dismissible
 		elevation="15"
 		transition="scale-transition"
-		class="mt-3">
+		class="alert-position">
 		{{ message }}
 	</v-alert>
 </template>
@@ -24,6 +24,10 @@
 		}),
 		method: {
 			
+		},
+		beforeUnmount() {
+			/* just to make sure that the compunent state is false */
+			this.$emit('alertClosed')
 		},
 		watch: {
 			isAlert(newVal) {
@@ -44,3 +48,11 @@
 		},
 	}
 </script>
+
+<style scoped>
+	.alert-position {
+		position: fixed;
+		z-index: 10;
+		min-width: 350px;
+	}
+</style>

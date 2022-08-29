@@ -11,7 +11,16 @@ const inventory = {
 		employeeLog: false,
 		prodID: '',
 		itemDetail: '',
+		brands: '',
+		sizes: '',
+		colors: '',
+		types: '',
+		categories: '',
 		inventory: {
+			data: '',
+			links: {},
+		},
+		orders: {
 			data: '',
 			links: {},
 		},
@@ -50,16 +59,33 @@ const inventory = {
 		setInventoryData(state, data) {
 			state.inventory.data = data
 		},
+		setOrderLinks(state, links) {
+			state.orders.links = links
+		},
+		setOrderData(state, data) {
+			state.orders.data = data
+		},
 		setItemDetail(state, data) {
 			state.itemDetail = data
-		}
+		},
+		setItemAttributes(state, data) {
+			state.brands = JSON.stringify(data.brand)
+			state.sizes = JSON.stringify(data.size)
+			state.colors = JSON.stringify(data.color)
+			state.types = JSON.stringify(data.type)
+			state.categories = JSON.stringify(data.category)
+		},
 	},
 	actions: {
 		selectTab({commit, dispatch}, val) {
 			commit('setTab', val)
 			if (val == 'dashboard') {
 				dispatch('setOverlay', true)
-				dispatch('getItemInventory', null)
+				dispatch('getItemInventory')
+				.then(response => { 
+					console.log(response.data)
+					dispatch('setOverlay', false)
+				})
 			}
 		},
 		setInventoryState({commit}, val) {
@@ -89,7 +115,7 @@ const inventory = {
 
 			return respObj
 		},
-		async nextPage({commit, dispatch, rootGetters}, url) {
+		async nextPage({state, commit, dispatch, rootGetters}, url) {
 			dispatch('setOverlay', true)
 			await axios({
 				method: 'GET', 
@@ -98,7 +124,12 @@ const inventory = {
 			})
 			.then(function (response) {
 				if (response.data.data.length) {
-					commit('setInventoryData', JSON.stringify(response.data.data))
+					if (state.orderItem) {
+						commit('setOrderData', JSON.stringify(response.data.data))
+					}
+					else {
+						commit('setInventoryData', JSON.stringify(response.data.data))
+					}
 				}
 				dispatch('setOverlay', false)
 			})
@@ -125,13 +156,13 @@ const inventory = {
 				console.log(error)
 			});
 		},
-		async updateStock({dispatch, rootState, rootGetters}, item) {
+		async saveOrUpdate({dispatch, rootState, rootGetters}, obj) {
 			let updated = false
 			dispatch('setOverlay', true)
 			await axios({
 				method: 'POST', 
-				url: rootState.baseurl + 'inventory/addStock/store',
-				data: { shoe_id: item[0], qty: item[1] },
+				url: rootState.baseurl + obj.url,
+				data: obj.data,
 				headers: rootGetters.getHeaders,
 			})
 			.then(response => {
@@ -160,11 +191,71 @@ const inventory = {
 			})
 			return updated
 		},
+		async getOrderInventory({commit, rootState, rootGetters}) {
+			let respObj = { allowed: false, msg: '' }
+			await axios({
+				method: 'GET', 
+				url: rootState.baseurl + 'inventory/orders/index',
+				headers: rootGetters.getHeaders,
+			})
+			.then(function (response) {
+				if (response.data.data.length) {
+					commit('setOrderLinks', response.data.links)
+					commit('setOrderData', JSON.stringify(response.data.data))
+					respObj.allowed = true
+				}
+				else {
+					respObj.msg = response.data
+				}
+			})
+			.catch(function (error) {
+				respObj.msg = error.message
+				console.log(error)
+			});
+
+			return respObj
+		},
+		async newItem({commit, rootState, rootGetters}) {
+			await axios({
+				method: 'GET',
+				url: rootState.baseurl + 'inventory/product/index',
+				headers: rootGetters.getHeaders,
+			})
+			.then(response => {
+				if (response.data) {
+					commit('setItemAttributes', response.data)
+				}
+			})
+			.catch(error => {
+				console.log(error.message)
+			})
+		},
 	},
 	getters: {
 		getItems(state) {
 			return state.itemDetail
 		},
+		getInventoryItems(state) {
+			return state.inventory
+		},
+		getOrderItems(state) {
+			return state.orders
+		},
+		setAddStock(state) {
+			return state.addStock
+		},
+		setAddItem(state) {
+			return state.addItem
+		},
+		setOrderItem(state) {
+			return state.orderItem
+		},
+		setEmpLog(state) {
+			return state.employeeLog
+		},
+		getItemAttr(state) {
+			return [state.brands, state.sizes, state.colors, state.types, state.categories]
+		}
 	}
 }
 

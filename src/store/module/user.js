@@ -3,22 +3,14 @@ import router from '../../router'
 
 const user = {
 	state: () => ({
-		userIsLoggedIn: false,
 		userInfo: {
 			username: '',
 			permission: [],
 			role: [],
 			id: 0,
 		},
-		token: '',
 	}),
 	mutations: {
-		setLoginState(state, val) {
-			state.userIsLoggedIn = val
-		},
-		setToken(state, tkn) {
-			state.token = tkn
-		},
 		setUser(state, obj) {
 			state.userInfo.username = obj.username
 			state.userInfo.permission = obj.permission
@@ -27,18 +19,10 @@ const user = {
 		},
 	},
 	actions: {
-		getStoredToken({commit}) {
-			let token = localStorage.getItem('token') ?? null
-			if (token) {
-				let usersInfo = localStorage.getItem('userDetail')
-				commit('setUser', JSON.parse(usersInfo))
-				commit('setToken', token)
-				commit('setLoginState', true)
+		getStoredUser({commit, rootState}) {
+			if (rootState.token != '') {
+				commit('setUser', JSON.parse(localStorage.getItem('userDetail')))
 			}
-		},
-		getStoredUser({commit}) {
-			let userDet = localStorage.getItem('userDetail') ?? {}
-			commit('setUser', JSON.parse(userDet))
 		},
 		async login({commit, dispatch, rootState}, cred) {
 			let userDet = {}, respObj = {}
@@ -59,7 +43,6 @@ const user = {
 					userDet.id = response.data.id
 					userDet.permission = response.data.permission
 
-					commit('setToken', response.data.token)
 					commit('setUser', userDet)
 					localStorage.setItem('userDetail', JSON.stringify(userDet))
 					localStorage.setItem('token', response.data.token)
@@ -76,7 +59,7 @@ const user = {
 
 			return respObj
 		},
-		async logout({commit, rootState, rootGetters}, val) {
+		async logout({dispatch,rootState, rootGetters}) {
 			let respObj = {}
 			await axios({
 				method: 'POST', 
@@ -86,8 +69,9 @@ const user = {
 			.then(function (response) {
 				console.log(response)
 				respObj = { msgType: 'success', msg: response.data.token}
-				commit('setLoginState', val)
 				localStorage.removeItem('token')
+				localStorage.removeItem('userDetail')
+				dispatch('changeToken')
 				router.push({name: 'login'})
 			})
 			.catch(function (error) {
@@ -98,9 +82,6 @@ const user = {
 		}
 	},
 	getters: {
-		getUserAuthState(state) {
-			return state.userIsLoggedIn
-		},
 		getUser(state) {
 			return state.userInfo
 		}

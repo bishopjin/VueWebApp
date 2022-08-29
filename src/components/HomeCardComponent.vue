@@ -91,7 +91,7 @@
 						}
 						break
 					default:
-						this.$store.dispatch('getItemInventory', url)
+						this.$store.dispatch('getItemInventory')
 						.then(response => {
 							if (response.allowed) {
 								this.$router.push(url)

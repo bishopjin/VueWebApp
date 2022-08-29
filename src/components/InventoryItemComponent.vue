@@ -1,12 +1,14 @@
 <template>
 	<div class="d-flex justify-center">
 		<v-card elevation="15" class="card-width px-5 py-5">
-			<AlertComponent 
-				:message="alertMsg" 
-				:alertType="alertType" 
-				:isAlert="isAlert"
-				@alertClosed="closeAlert"/>
-
+			<div class="d-flex justify-center">
+				<AlertComponent 
+					:message="alertMsg" 
+					:alertType="alertType" 
+					:isAlert="isAlert"
+					@alertClosed="closeAlert"/>
+			</div>
+			
 			<v-card-title>{{ cardName }}</v-card-title>
 			<v-card-text>
 				<v-form v-model="validForm" ref="form">
@@ -15,18 +17,15 @@
 						<v-text-field 
 							v-model="prodID"
 							label="Product ID"
+							append-icon="mdi-magnify"
+							@click:append="searchItem"
 							:rules="ruleProdID"></v-text-field>
-						<v-btn 
-							text 
-							color="success"
-							:disabled="idEmpty"
-							@click="searchItem">Search</v-btn>
 					</div>
 					<!--  -->
 					<v-select
 						v-if="isAddItem"
 						label="Brand"
-						:items="items"
+						:items="brands"
 						item-text="name"
 						item-value="id"
 						v-model="brand">
@@ -40,7 +39,7 @@
 					<v-select
 						v-if="isAddItem"
 						label="Size"
-						:items="items"
+						:items="sizes"
 						item-text="name"
 						item-value="id"
 						v-model="iSize">
@@ -54,7 +53,7 @@
 					<v-select
 						v-if="isAddItem"
 						label="Color"
-						:items="items"
+						:items="colors"
 						item-text="name"
 						item-value="id"
 						v-model="color">
@@ -68,7 +67,7 @@
 					<v-select
 						v-if="isAddItem"
 						label="Type"
-						:items="items"
+						:items="types"
 						item-text="name"
 						item-value="id"
 						v-model="iType">
@@ -82,7 +81,7 @@
 					<v-select
 						v-if="isAddItem"
 						label="Category"
-						:items="items"
+						:items="categories"
 						item-text="name"
 						item-value="id"
 						v-model="cat">
@@ -94,8 +93,15 @@
 						:readonly="!isAddItem"></v-text-field>
 					<!--  -->
 					<v-text-field 
+						v-if="isAddItem"
+						v-model="price"
+						label="Price"
+						:rules="rulePrice"
+						type="number"></v-text-field>	
+					<v-text-field 
+						v-else
 						v-model="qty"
-						:label="labelDynamic"
+						label="Quantity"
 						:rules="ruleQty"
 						type="number"></v-text-field>	
 				</v-form>
@@ -103,6 +109,7 @@
 			<v-card-actions class="d-flex justify-center">
 				<v-btn 
 					outlined color="primary"
+					block
 					:disabled="!isFormValid"
 					@click="saveData"
 					>Save</v-btn>
@@ -126,21 +133,22 @@
 			iType: '',
 			cat: '',
 			qty: '',
+			price: '',
 			isAlert: false,
 			alertMsg: '',
 			alertType: 'warning',
 			validForm: false,
 			isItemExist: false,
 			idEmpty: true,
-			items: [
-				{ name: 'Test', id: '1' }
-			],
 			ruleProdID: [
 				v => !!v || 'Product ID is required',
 			],
 			ruleQty: [
 				v => !!v || 'Quantity is required',
 			],
+			rulePrice: [
+				v => !!v || 'Price is required',
+			]
 		}),
 		props: {
 			cardName: String,
@@ -150,6 +158,14 @@
 			prodID(val) {
 				this.idEmpty = val == '' ? true : false
 			}
+		},
+		created() {
+			this.$store.dispatch('setOverlay', true)
+			this.$store.dispatch('newItem')
+			.then(response => { 
+				console.log(response)
+				this.$store.dispatch('setOverlay', false)
+			})
 		},
 		methods: {
 			searchItem() {
@@ -185,7 +201,25 @@
 				this.isAlert = false
 			},
 			saveData() {
-				this.$store.dispatch('updateStock', [this.prodID, this.qty])
+				let obj = {}, data = []
+
+				if (this.isAddItem) {
+					data = {
+						inventory_item_brand_id: this.brand,
+						inventory_item_size_id: this.iSize,
+						inventory_item_color_id: this.color,
+						inventory_item_type_id: this.iType,
+						inventory_item_category_id: this.cat,
+						price: this.price,
+					}
+				}
+				else {
+					data = { shoe_id: this.prodID, qty: this.qty }
+				}
+				obj.url = this.isAddItem ? 'inventory/product/store' : 'inventory/addStock/store',
+				obj.data = data
+
+				this.$store.dispatch('saveOrUpdate', obj)
 				.then(response => {
 					this.alertType = 'error'
 					this.alertMsg = 'Failed'
@@ -198,15 +232,41 @@
 					this.validForm = false
 					this.$store.dispatch('setOverlay', false)
 				})
+			},
+			setObjects(strobj, name) {
+				let retArray = [], newObj = {}
+				if (strobj != '') {
+					let obj = JSON.parse(strobj)
+					obj.forEach(row => {
+						newObj.name = row[name]
+						newObj.id = row.id
+						retArray.push(newObj)
+						newObj = {}
+					})
+				}
+
+				return retArray
 			}
 		},
 		computed: {
-			labelDynamic() {
-				return this.isAddItem ? 'Price' : 'Quantity'
-			},
 			isFormValid() {
-				return this.validForm && this.isItemExist
-			}
+				return this.isAddItem ? this.validForm : this.validForm && this.isItemExist
+			},
+			brands() {
+				return this.setObjects(this.$store.getters.getItemAttr[0], 'brand')
+			},
+			sizes() {
+				return this.setObjects(this.$store.getters.getItemAttr[1], 'size')
+			},
+			colors() {
+				return this.setObjects(this.$store.getters.getItemAttr[2], 'color')
+			},
+			types() {
+				return this.setObjects(this.$store.getters.getItemAttr[3], 'type')
+			},
+			categories() {
+				return this.setObjects(this.$store.getters.getItemAttr[4], 'category')
+			},
 		}
 	}
 </script>

@@ -3,7 +3,7 @@
 		<v-container class="pt-4" fluid>
 			<v-row>
 				<v-col class="text-center">
-					<div class="text-md-h4 text-h5">Web Application</div>
+					<div class="text-md-h5 text-h5">VueJs Web Application</div>
 					<v-divider class="my-4"></v-divider>
 				</v-col>
 			</v-row>
