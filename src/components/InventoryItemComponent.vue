@@ -161,9 +161,8 @@
 		},
 		created() {
 			this.$store.dispatch('setOverlay', true)
-			this.$store.dispatch('newItem')
+			this.$store.dispatch('newItem') // eslint-disable-next-line
 			.then(response => { 
-				console.log(response)
 				this.$store.dispatch('setOverlay', false)
 			})
 		},
@@ -171,8 +170,8 @@
 			searchItem() {
 				this.alertType = 'warning'
 				if (this.prodID) {
-					this.$store.dispatch('getItemDetails', this.prodID).then(response => {
-						console.log(response)
+					this.$store.dispatch('getItemDetails', this.prodID) // eslint-disable-next-line
+					.then(response => {
 						if (this.$store.getters.getItems != '') {
 							let obj = JSON.parse(this.$store.getters.getItems)
 							this.prodID = obj.id

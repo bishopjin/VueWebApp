@@ -4,6 +4,7 @@
 		:type="alertTyp"
 		border="left"
 		close-icon="mdi-close"
+		dense
 		dismissible
 		elevation="15"
 		transition="scale-transition"
@@ -53,6 +54,6 @@
 	.alert-position {
 		position: fixed;
 		z-index: 10;
-		min-width: 350px;
+		min-width: 300px;
 	}
 </style>

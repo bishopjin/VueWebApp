@@ -1,8 +1,17 @@
 <template>
 	<div>
+		<div class="d-flex justify-center">
+			<AlertComponent 
+				class="mt-4"
+				:message="alertMsg" 
+				:alertType="alertType" 
+				:isAlert="isAlert"
+				@alertClosed="closeAlert"/>
+		</div>
 		<v-responsive 
 			:aspect-ratio="21/9"
 			content-class="d-flex justify-center align-center">
+
 			<v-card elevation="12" shaped class="px-4 py-4">
 				<v-card-title>Login</v-card-title>
 				<v-card-text>
@@ -23,11 +32,6 @@
 						<v-btn class="mt-3" block outlined :disabled="!valid" @click="submit">Login</v-btn>
 					</v-form>
 				</v-card-text>
-				<AlertComponent 
-					:message="alertMsg" 
-					:alertType="alertType" 
-					:isAlert="isAlert"
-					@alertClosed="closeAlert"/>
 			</v-card>
 		</v-responsive>
 		<!--  -->

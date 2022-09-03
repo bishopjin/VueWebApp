@@ -68,6 +68,7 @@
 		},
 		created() {
 			this.$store.dispatch('selectTab', 'dashboard')
+			this.$store.dispatch('getStoredUser')
 		},
 		computed: {
 			isLoading() {

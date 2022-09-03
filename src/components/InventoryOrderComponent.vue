@@ -154,9 +154,8 @@
 			this.empID = this.$store.getters.getUser.id
 
 			this.$store.dispatch('setOverlay', true)
-			this.$store.dispatch('getOrderInventory')
+			this.$store.dispatch('getOrderInventory') // eslint-disable-next-line
 			.then(response => { 
-				console.log(response.allowed)
 				this.$store.dispatch('setOverlay', false)
 			})
 		},
@@ -213,10 +212,9 @@
 				this.clearForm = true
 			
 				if (this.prodID) {
-					this.$store.dispatch('getItemDetails', this.prodID).then(response => {
-						console.log(response)
+					this.$store.dispatch('getItemDetails', this.prodID) // eslint-disable-next-line
+					.then(response => { 
 						if (this.$store.getters.getItems != '') {
-							//console.log(this.$store.getters.getItems)
 							let obj = JSON.parse(this.$store.getters.getItems)
 							this.prodID = obj.id
 							this.brand = obj.brand.brand
@@ -241,7 +239,7 @@
 				}
 			},
 			saveData() {
-				this.$store.dispatch('getStock', [this.prodID, this.qty])
+				this.$store.dispatch('getStock', [this.prodID, this.qty]) 
 				.then(response => {
 					this.isAlert = true
 					this.clearForm = true

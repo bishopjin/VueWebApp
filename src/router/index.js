@@ -74,7 +74,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
 	if (to.matched.some(record => record.meta.reqLogin)) {
 		store.dispatch('changeToken')
-		console.log(store.getters.getUserAuthState)
+		//console.log(store.getters.getUserAuthState)
 		if (!store.getters.getUserAuthState) {
 			next({
 				path: '/login',

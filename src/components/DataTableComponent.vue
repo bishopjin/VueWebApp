@@ -19,7 +19,17 @@
 				:items="inventory"
 				:items-per-page="perPage"
 				hide-default-footer
-				></v-data-table>
+				>
+				<!-- eslint-disable-next-line -->
+				<template v-slot:item.cas="{ item }"> 
+					<v-btn 
+						text
+						:color="item.cas[1] ? 'success' : 'error'"
+						@click="setStatus(item.cas[0])">
+						{{ rowBtnLbl(item.cas[1]) }}
+					</v-btn>
+				</template>
+			</v-data-table>
 
 			<div class="d-flex justify-end pt-3">
 				<v-pagination
@@ -46,6 +56,11 @@
 			search: '',
 			page: 1,
 		}),
+		watch: {
+			linkLength() {
+				this.page = 1
+			}
+		},
 		methods: {
 			nextPage(nextPage) {
 				this.$store.dispatch('nextPage', nextPage)
@@ -56,6 +71,21 @@
 			emitEvent() {
 				this.$emit('btnClicked')
 			},
+			rowBtnLbl(cond) {
+				return cond ? 'Enable' : 'Disable'
+			},
+			setStatus(id) {
+				this.$store.dispatch('setOverlay', true)
+				this.$store.dispatch('userSetAccess', id)
+				.then(response => {
+					if (response == parseInt(id)) {
+						this.$store.dispatch('userEdit') // eslint-disable-next-line
+						.then(response => {
+							this.$store.dispatch('setOverlay', false)
+						})
+					}
+				})
+			}
 		},
 		computed: {
 			inventory() {

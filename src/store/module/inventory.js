@@ -24,6 +24,14 @@ const inventory = {
 			data: '',
 			links: {},
 		},
+		eLogs: {
+			data: '',
+			links: {},
+		},
+		users: {
+			data: '',
+			links: {},
+		}
 	}),
 	mutations: {
 		setTab(state, val) {
@@ -65,6 +73,18 @@ const inventory = {
 		setOrderData(state, data) {
 			state.orders.data = data
 		},
+		setELogsLinks(state, links) {
+			state.eLogs.links = links
+		},
+		setELogsData(state, data) {
+			state.eLogs.data = data
+		},
+		setUsersLinks(state, links) {
+			state.users.links = links
+		},
+		setUsersData(state, data) {
+			state.users.data = data
+		},
 		setItemDetail(state, data) {
 			state.itemDetail = data
 		},
@@ -81,9 +101,8 @@ const inventory = {
 			commit('setTab', val)
 			if (val == 'dashboard') {
 				dispatch('setOverlay', true)
-				dispatch('getItemInventory')
+				dispatch('getItemInventory') // eslint-disable-next-line
 				.then(response => { 
-					console.log(response.data)
 					dispatch('setOverlay', false)
 				})
 			}
@@ -98,8 +117,8 @@ const inventory = {
 				url: rootState.baseurl + 'inventory/index',
 				headers: rootGetters.getHeaders,
 			})
-			.then(function (response) {
-				if (response.data.data.length) {
+			.then(response => {
+				if (response.data.data) {
 					commit('setInventoryLinks', response.data.links)
 					commit('setInventoryData', JSON.stringify(response.data.data))
 					respObj.allowed = true
@@ -108,9 +127,8 @@ const inventory = {
 					respObj.msg = response.data
 				}
 			})
-			.catch(function (error) {
+			.catch(error => {
 				respObj.msg = error.message
-				//console.log('error: ' + error.message)
 			});
 
 			return respObj
@@ -122,10 +140,18 @@ const inventory = {
 				url: url,
 				headers: rootGetters.getHeaders
 			})
-			.then(function (response) {
+			.then(response => {
 				if (response.data.data.length) {
 					if (state.orderItem) {
 						commit('setOrderData', JSON.stringify(response.data.data))
+					}
+					else if (state.employeeLog) {
+						if (url.includes('employeeLogs')) {
+							commit('setELogsData', JSON.stringify(response.data.data))
+						}
+						else {
+							commit('setUsersData', JSON.stringify(response.data.data))
+						}
 					}
 					else {
 						commit('setInventoryData', JSON.stringify(response.data.data))
@@ -133,8 +159,8 @@ const inventory = {
 				}
 				dispatch('setOverlay', false)
 			})
-			.catch(function (error) {
-				console.log('error: ' + error.message)
+			.catch(error => {
+				console.log(error.message)
 			});
 		},
 		async getItemDetails({commit, dispatch, rootState, rootGetters}, id) {
@@ -144,7 +170,7 @@ const inventory = {
 				url: rootState.baseurl + 'inventory/get/' + id,
 				headers: rootGetters.getHeaders,
 			})
-			.then(function (response) {
+			.then(response => {
 				if (response.data) {
 					commit('setItemDetail', JSON.stringify(response.data))
 				}
@@ -152,7 +178,7 @@ const inventory = {
 					commit('setItemDetail', '')
 				}
 			})
-			.catch(function (error) {
+			.catch(error => {
 				console.log(error)
 			});
 		},
@@ -167,7 +193,6 @@ const inventory = {
 			})
 			.then(response => {
 				updated = response.data
-				console.log(response.data)
 			})
 			.catch(error => {
 				console.log(error)
@@ -198,7 +223,7 @@ const inventory = {
 				url: rootState.baseurl + 'inventory/orders/index',
 				headers: rootGetters.getHeaders,
 			})
-			.then(function (response) {
+			.then(response => {
 				if (response.data.data.length) {
 					commit('setOrderLinks', response.data.links)
 					commit('setOrderData', JSON.stringify(response.data.data))
@@ -208,7 +233,7 @@ const inventory = {
 					respObj.msg = response.data
 				}
 			})
-			.catch(function (error) {
+			.catch(error => {
 				respObj.msg = error.message
 				console.log(error)
 			});
@@ -229,6 +254,68 @@ const inventory = {
 			.catch(error => {
 				console.log(error.message)
 			})
+		},
+		async employeeLogs({commit, rootState, rootGetters}) {
+			let respObj = { success: 0, msg: '' }
+			await axios({
+				method: 'GET',
+				url: rootState.baseurl + 'inventory/employee/logs',
+				headers: rootGetters.getHeaders,
+			})
+			.then(response => {
+				if (response.data.data) {
+					commit('setELogsLinks', response.data.links)
+					commit('setELogsData', JSON.stringify(response.data.data))
+					respObj.success = 1
+				}
+				else {
+					respObj.msg = response.data
+				}
+			})
+			.catch(error => {
+				respObj.msg = error
+			})
+			return respObj
+		},
+		async userEdit({commit, rootState, rootGetters}) {
+			await axios({
+				method: 'GET',
+				url: rootState.baseurl + 'inventory/employee/edit',
+				headers: rootGetters.getHeaders,
+			})
+			.then(response => {
+				if (response.data.data) {
+					commit('setUsersLinks', response.data.links)
+					commit('setUsersData', JSON.stringify(response.data.data))
+				}
+				else {
+					console.log(response.data)
+				}
+			})
+			.catch(error => {
+				console.log(error)
+			})
+		},
+		async userSetAccess({rootState, rootGetters}, userid) {
+			let resp = 0
+			await axios({
+				method: 'DELETE',
+				url: rootState.baseurl + 'inventory/employee/delete',
+				data: { id: userid },
+				headers: rootGetters.getHeaders,
+			})
+			.then(response => {
+				if (response.data) {
+					resp = response.data.id
+				}
+				else {
+					console.log(response.data)
+				}
+			})
+			.catch(error => {
+				console.log(error)
+			})
+			return resp
 		},
 	},
 	getters: {
@@ -252,6 +339,12 @@ const inventory = {
 		},
 		setEmpLog(state) {
 			return state.employeeLog
+		},
+		getUserLogs(state) {
+			return state.eLogs
+		},
+		getUserEdit(state) {
+			return state.users
 		},
 		getItemAttr(state) {
 			return [state.brands, state.sizes, state.colors, state.types, state.categories]

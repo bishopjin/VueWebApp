@@ -36,7 +36,7 @@ const user = {
 					origin: cred.origin
 				}
 			})
-			.then(function (response) {
+			.then(response => {
 				if (response.data.id > 0) {
 					userDet.username = cred.username
 					userDet.role = response.data.role
@@ -52,9 +52,9 @@ const user = {
 					respObj = { id: response.data.id, msgType: 'error', msg: response.data.token}
 				}
 			})
-			.catch(function (error) {
+			.catch(error => {
 				respObj = { id: 0, msgType: 'error', msg: ''}
-				console.log('error: ' + error.message)
+				console.log(error.message)
 			});
 
 			return respObj
@@ -66,25 +66,24 @@ const user = {
 				url: rootState.baseurl + 'logout',
 				headers: rootGetters.getHeaders
 			})
-			.then(function (response) {
-				console.log(response)
+			.then(response => {
 				respObj = { msgType: 'success', msg: response.data.token}
 				localStorage.removeItem('token')
 				localStorage.removeItem('userDetail')
 				dispatch('changeToken')
 				router.push({name: 'login'})
 			})
-			.catch(function (error) {
-				console.log('error: ' + error.message)
+			.catch(error => {
+				console.log(error.message)
 			});
 
 			return respObj
-		}
+		},
 	},
 	getters: {
 		getUser(state) {
 			return state.userInfo
-		}
+		},
 	}
 }
 
