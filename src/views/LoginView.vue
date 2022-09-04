@@ -29,7 +29,7 @@
 							type="password"
 							:rules="rulePassword"
 							required></v-text-field>
-						<v-btn class="mt-3" block outlined :disabled="!valid" @click="submit">Login</v-btn>
+						<v-btn class="mt-3" text color="primary" block :disabled="!valid" @click="submit">Login</v-btn>
 					</v-form>
 				</v-card-text>
 			</v-card>
@@ -71,18 +71,22 @@
 					'origin': window.location.origin
 				}
 				
-				this.$store.dispatch('login', obj).then(resp => {
-					this.$store.dispatch('setOverlay', false)
-					if (resp.id > 0) {
-						this.$router.push({name: 'home'})
-						this.$store.dispatch('changeToken')
-					}
-					else {
-						this.isAlert = true
-						this.alertMsg = resp.msg
-						this.alertType = resp.msgType
-					}
+				this.$store.dispatch('getCSRFToken')
+				.then(() => {
+					this.$store.dispatch('login', obj).then(resp => {
+						this.$store.dispatch('setOverlay', false)
+						if (resp.id > 0) {
+							this.$router.push({name: 'home'})
+							this.$store.dispatch('changeToken')
+						}
+						else {
+							this.isAlert = true
+							this.alertMsg = resp.msg
+							this.alertType = resp.msgType
+						}
+					})
 				})
+				
 			},
 			closeAlert() {
 				this.isAlert = false

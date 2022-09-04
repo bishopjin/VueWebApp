@@ -24,6 +24,61 @@ const user = {
 				commit('setUser', JSON.parse(localStorage.getItem('userDetail')))
 			}
 		},
+		/* check token */
+		// eslint-disable-next-line
+		async validateToken({state, dispatch, rootState, rootGetters}) {
+			await axios({
+				method: 'GET',
+				url: rootState.baseurl + 'checkUser',
+				headers: rootGetters.getHeaders,
+			}) 
+			.then((response) => {
+				if (response.data != state.userInfo.id) {
+					dispatch('logout')
+				}
+			})
+			.catch(error => {
+				dispatch('checkErrorResponse', error)
+				//console.log(error)
+			})
+		},
+		/* not working dunno why */
+		async getCSRFToken() {
+			await axios({
+				method: 'GET',
+				url: 'https://laravelwebapp.genesedan.com/sanctum/csrf-cookie',
+			})
+			.then(() => {})
+			.catch(error => {
+				console.log(error)
+			})
+		},
+		async register({rootState}, userData) {
+			let respObj = { success: 0, msg: 'Failed' }
+			await axios({
+				method: 'POST',
+				url: rootState.baseurl + 'register',
+				data: userData,
+			})
+			.then(response => {
+				if (response.data.id == '1') {
+					respObj.success = 1
+					respObj.msg = 'Successful'
+				}
+				else if(response.data.id == '2') {
+					let errMsg = '', resp = response.data.msg.message.original
+					Object.keys(resp).forEach((key) => {
+						errMsg += (resp[key][0])
+						errMsg += '<br/>'
+					})
+					respObj.msg = errMsg
+				}
+			})
+			.catch(error => {
+				console.log(error)
+			})
+			return respObj
+		},
 		async login({commit, dispatch, rootState}, cred) {
 			let userDet = {}, respObj = {}
 			dispatch('setOverlay', true)

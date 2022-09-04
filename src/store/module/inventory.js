@@ -128,7 +128,7 @@ const inventory = {
 				}
 			})
 			.catch(error => {
-				respObj.msg = error.message
+				respObj.msg = error.response.status
 			});
 
 			return respObj
@@ -160,7 +160,8 @@ const inventory = {
 				dispatch('setOverlay', false)
 			})
 			.catch(error => {
-				console.log(error.message)
+				dispatch('checkErrorResponse', error)
+				//console.log(error.message)
 			});
 		},
 		async getItemDetails({commit, dispatch, rootState, rootGetters}, id) {
@@ -179,7 +180,8 @@ const inventory = {
 				}
 			})
 			.catch(error => {
-				console.log(error)
+				dispatch('checkErrorResponse', error)
+				//console.log(error)
 			});
 		},
 		async saveOrUpdate({dispatch, rootState, rootGetters}, obj) {
@@ -195,7 +197,8 @@ const inventory = {
 				updated = response.data
 			})
 			.catch(error => {
-				console.log(error)
+				dispatch('checkErrorResponse', error)
+				//console.log(error)
 			})
 			return updated
 		},
@@ -212,11 +215,12 @@ const inventory = {
 				updated = response.data
 			})
 			.catch(error => {
-				console.log(error)
+				dispatch('checkErrorResponse', error)
+				//console.log(error)
 			})
 			return updated
 		},
-		async getOrderInventory({commit, rootState, rootGetters}) {
+		async getOrderInventory({commit, dispatch, rootState, rootGetters}) {
 			let respObj = { allowed: false, msg: '' }
 			await axios({
 				method: 'GET', 
@@ -234,13 +238,14 @@ const inventory = {
 				}
 			})
 			.catch(error => {
+				dispatch('checkErrorResponse', error)
 				respObj.msg = error.message
-				console.log(error)
+				//console.log(error)
 			});
 
 			return respObj
 		},
-		async newItem({commit, rootState, rootGetters}) {
+		async newItem({commit, dispatch, rootState, rootGetters}) {
 			await axios({
 				method: 'GET',
 				url: rootState.baseurl + 'inventory/product/index',
@@ -252,10 +257,11 @@ const inventory = {
 				}
 			})
 			.catch(error => {
-				console.log(error.message)
+				dispatch('checkErrorResponse', error)
+				//console.log(error.message)
 			})
 		},
-		async employeeLogs({commit, rootState, rootGetters}) {
+		async employeeLogs({commit, dispatch, rootState, rootGetters}) {
 			let respObj = { success: 0, msg: '' }
 			await axios({
 				method: 'GET',
@@ -273,11 +279,12 @@ const inventory = {
 				}
 			})
 			.catch(error => {
+				dispatch('checkErrorResponse', error)
 				respObj.msg = error
 			})
 			return respObj
 		},
-		async userEdit({commit, rootState, rootGetters}) {
+		async userEdit({commit, dispatch, rootState, rootGetters}) {
 			await axios({
 				method: 'GET',
 				url: rootState.baseurl + 'inventory/employee/edit',
@@ -293,10 +300,11 @@ const inventory = {
 				}
 			})
 			.catch(error => {
-				console.log(error)
+				dispatch('checkErrorResponse', error)
+				//console.log(error)
 			})
 		},
-		async userSetAccess({rootState, rootGetters}, userid) {
+		async userSetAccess({dispatch, rootState, rootGetters}, userid) {
 			let resp = 0
 			await axios({
 				method: 'DELETE',
@@ -313,7 +321,8 @@ const inventory = {
 				}
 			})
 			.catch(error => {
-				console.log(error)
+				dispatch('checkErrorResponse', error)
+				//console.log(error)
 			})
 			return resp
 		},

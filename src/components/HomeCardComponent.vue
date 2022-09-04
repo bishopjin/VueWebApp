@@ -98,7 +98,12 @@
 							}
 							else {
 								this.isAlert = true
-								this.alertMsg = response.msg.includes('403') ? 'Not Authorize' : response.msg
+								if (response.msg == 401) {
+									this.$store.dispatch('checkErrorResponse', 401)
+								}
+								else {
+									this.alertMsg = response.msg == 403 ? 'Not Authorize' : response.msg.toString()
+								}
 							}
 							this.$store.dispatch('setOverlay', false)
 						})

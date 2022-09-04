@@ -70,7 +70,7 @@
 		},
 		computed: {
 			items() {
-				let obj = {}, data = [], dataObj = {}, dtData = []
+				let obj = {}, data = [], dataObj = {}, dtData = [], mname = ''
 
 				if (this.$store.getters.getUserLogs.data) {
 					dtData = JSON.parse(this.$store.getters.getUserLogs.data)
@@ -78,9 +78,10 @@
 						dtData.forEach((row) => {
 							let timeIn = row.time_in ? row.time_in.split(' ') : null,
 									timeout = row.time_out ? row.time_out.split(' ') : null
-
+									
+							mname = row.user.middlename ? row.user.middlename : ''
 							dataObj.uid = row.id
-							dataObj.empName = row.user.lastname + ', ' + row.user.firstname + ' ' + row.user.middlename
+							dataObj.empName = row.user.lastname + ', ' + row.user.firstname + ' ' + mname
 							dataObj.tIn = timeIn[1]
 							dataObj.inDate = timeIn[0]
 							dataObj.tOut = timeout ? timeout[1] : ''
@@ -98,14 +99,15 @@
 				return obj
 			},
 			itemsUserEdit() {
-				let obj = {}, data = [], dataObj = {}, dtData = []
+				let obj = {}, data = [], dataObj = {}, dtData = [], mname = ''
 
 				if (this.$store.getters.getUserEdit.data) {
 					dtData = JSON.parse(this.$store.getters.getUserEdit.data)
 					if (dtData) {
 						dtData.forEach((row) => {
+							mname = row.middlename ? row.middlename : ''
 							dataObj.uid = row.id
-							dataObj.empName = row.lastname + ', ' + row.firstname + ' ' + row.middlename
+							dataObj.empName = row.lastname + ', ' + row.firstname + ' ' + mname
 							dataObj.aType = 'For standalone system only'
 							dataObj.cat = 'For standalone system only'
 							dataObj.cas = [row.id, row.deleted_at]

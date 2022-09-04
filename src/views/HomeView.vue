@@ -69,6 +69,7 @@
 		},
 		created() {
 			this.$store.dispatch('setOverlay', false)
+			this.$store.dispatch('validateToken')
 		},
 		data: () => ({
 			content: {

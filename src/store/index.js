@@ -4,6 +4,7 @@ import darkmode from './module/darkmode'
 import user from './module/user'
 import menu from './module/menu'
 import inventory from './module/inventory'
+import router from '../router'
 
 Vue.use(Vuex)
 
@@ -44,6 +45,18 @@ export default new Vuex.Store({
 			}
 			else {
 				commit('setUserLoginState', false)
+			}
+		},
+		checkErrorResponse({dispatch}, error) {
+			if (error.response.status == 403) {
+				router.push({ name: 'home' })
+			}
+			else if (error.response.status == 401) {
+				localStorage.removeItem('token')
+				localStorage.removeItem('userDetail')
+				dispatch('changeToken').then(() => {
+					router.push({name: 'login'})
+				})
 			}
 		}
 	},

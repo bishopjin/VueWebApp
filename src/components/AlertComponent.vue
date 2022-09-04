@@ -9,7 +9,7 @@
 		elevation="15"
 		transition="scale-transition"
 		class="alert-position">
-		{{ message }}
+		<span v-html="message"></span>
 	</v-alert>
 </template>
 
