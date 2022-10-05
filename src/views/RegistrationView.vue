@@ -180,8 +180,15 @@
 							this.$router.push({ name: 'login' })
 						}
 						else {
+							let msg = '',
+									response = JSON.parse(resp);
+							
+							for (let key in response.errors) {
+								msg += (response.errors[key] + '<br>')
+							}
+
 							this.isAlert = true
-							this.alertMsg = resp.msg
+							this.alertMsg = msg
 							this.alertType = 'error'
 						}
 					})

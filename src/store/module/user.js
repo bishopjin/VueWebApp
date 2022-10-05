@@ -75,7 +75,8 @@ const user = {
 				}
 			})
 			.catch(error => {
-				console.log(error)
+				//console.log(error.request.responseText)
+				respObj = error.request.responseText
 			})
 			return respObj
 		},
@@ -86,8 +87,8 @@ const user = {
 				method: 'POST', 
 				url: rootState.baseurl + 'login',
 				data: {
-					uname: cred.username,
-					pword: cred.password,
+					username: cred.username,
+					password: cred.password,
 					origin: cred.origin
 				}
 			})
@@ -108,8 +109,7 @@ const user = {
 				}
 			})
 			.catch(error => {
-				respObj = { id: 0, msgType: 'error', msg: ''}
-				console.log(error.message)
+				respObj = error.request.responseText
 			});
 
 			return respObj

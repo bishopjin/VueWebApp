@@ -1,17 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-    <title><%= htmlWebpackPlugin.options.title %></title>
-  </head>
-  <body>
-    <noscript>
-      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-  </body>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+		<link rel="icon" href="<%= BASE_URL %>favicon.ico">
+		<title><%= htmlWebpackPlugin.options.title %></title>
+		<script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+		<script>
+
+		// Enable pusher logging - don't include this in production
+		Pusher.logToConsole = true;
+
+		var pusher = new Pusher('a6643bf69356bd490af0', {
+			cluster: 'ap1'
+		});
+
+		var channel = pusher.subscribe('my-channel');
+		channel.bind('my-event', function(data) {
+			alert(JSON.stringify(data));
+		});
+		</script>
+	</head>
+	<body>
+		<noscript>
+			<strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+		</noscript>
+		<div id="app"></div>
+		<!-- built files will be auto injected -->
+	</body>
 </html>

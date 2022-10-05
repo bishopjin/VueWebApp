@@ -10,7 +10,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
 	state: {
-		baseurl: 'https://laravelwebapp.genesedan.com/api/', //'http://127.0.0.1:8000/api/',
+		baseurl: 'http://127.0.0.1:8000/api/', //'https://laravelwebapp.genesedan.com/api/', 
 		overlayShow: false,
 		accepted: 'application/json',
 		reqType: 'application/json',

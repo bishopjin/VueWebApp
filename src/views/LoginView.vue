@@ -80,9 +80,26 @@
 							this.$store.dispatch('changeToken')
 						}
 						else {
+							let msg = '',
+									msgType = ''
+
+							if (resp.id > -1) {
+								msgType = resp.msgType
+								msg = resp.msg
+							}
+							else {
+								let response = JSON.parse(resp)
+								
+								msgType = 'error'
+							
+								for (let key in response.errors) {
+									msg += (response.errors[key] + '<br>')
+								}
+							}
+
 							this.isAlert = true
-							this.alertMsg = resp.msg
-							this.alertType = resp.msgType
+							this.alertMsg = msg
+							this.alertType = msgType
 						}
 					})
 				})

@@ -88,7 +88,7 @@
 					</a>
 				</div>
 				<div class="text-md-subtitle-2 text-subtitle-2 pt-2">
-					Last Updated: August 29, 2022
+					Last Updated: September 4, 2022
 				</div>
 			</div>
 		</v-footer>
