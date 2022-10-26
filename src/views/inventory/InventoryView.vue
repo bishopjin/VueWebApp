@@ -19,13 +19,14 @@
 					<EmployeeLogsComponent
 						v-else-if="isEmployeeLogs"
 					/>
-					<DataTableComponent
-						v-else
-						dtTitle="Item Inventory" 
-						:btnShow="false"
-						:dtHeaders="headers" 
-						:dtItems="items"
-					/>
+					<div v-else>
+						<DataTableComponent
+							dtTitle="Item Inventory" 
+							:btnShow="false"
+							:dtHeaders="headers" 
+							:dtItems="items"
+						/>
+					</div>
 				</v-col>
 			</v-row>
 		</v-container>

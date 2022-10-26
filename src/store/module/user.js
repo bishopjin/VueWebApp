@@ -42,17 +42,6 @@ const user = {
 				//console.log(error)
 			})
 		},
-		/* not working dunno why */
-		async getCSRFToken() {
-			await axios({
-				method: 'GET',
-				url: 'https://laravelwebapp.genesedan.com/sanctum/csrf-cookie',
-			})
-			.then(() => {})
-			.catch(error => {
-				console.log(error)
-			})
-		},
 		async register({rootState}, userData) {
 			let respObj = { success: 0, msg: 'Failed' }
 			await axios({

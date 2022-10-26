@@ -172,7 +172,7 @@
 					dtData = JSON.parse(this.$store.getters.getOrderItems.data)
 					if (dtData) {
 						dtData.forEach((row) => {
-							dataObj.ordNum = row.order_number
+							dataObj.ordNum = row.id
 							dataObj.itemID = row.inventory_item_shoe_id
 							dataObj.brand = row.shoe.brand.brand
 							dataObj.size = row.shoe.size.size

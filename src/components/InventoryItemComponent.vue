@@ -213,9 +213,9 @@
 					}
 				}
 				else {
-					data = { shoe_id: this.prodID, qty: this.qty }
+					data = { inventory_item_shoe_id: this.prodID, qty: this.qty }
 				}
-				obj.url = this.isAddItem ? 'inventory/product/store' : 'inventory/addStock/store',
+				obj.url = this.isAddItem ? 'inventory/product' : 'inventory/product/deliver'
 				obj.data = data
 
 				this.$store.dispatch('saveOrUpdate', obj)

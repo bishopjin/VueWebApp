@@ -20,16 +20,6 @@
 				</v-col>
 				<v-col md="4" cols="12" class="d-flex">
 					<HomeCardComponent 
-						cardTitle="Menu Ordering" 
-						cardIcon="mdi-silverware" 
-						:cardBody="content.menuOrder"
-						:btnObj="btnObj.menuOrder"
-						:isCardAction="false"
-						@openOverlay="showLoading(true)"
-					/>
-				</v-col>
-				<v-col md="4" cols="12" class="d-flex">
-					<HomeCardComponent 
 						cardTitle="Online Examination" 
 						cardIcon="mdi-monitor-dashboard" 
 						:cardBody="content.onlineExam"
@@ -38,14 +28,24 @@
 						@openOverlay="showLoading(true)"
 					/>
 				</v-col>
-			</v-row>
-			<v-row>
 				<v-col md="4" cols="12" class="d-flex">
 					<HomeCardComponent 
 						cardTitle="Payroll System" 
 						cardIcon="mdi-cash-multiple" 
 						:cardBody="content.payroll"
 						:btnObj="btnObj.payroll"
+						:isCardAction="false"
+						@openOverlay="showLoading(true)"
+					/>
+				</v-col>
+			</v-row>
+			<v-row>
+				<v-col md="4" cols="12" class="d-flex">
+					<HomeCardComponent 
+						cardTitle="Menu Ordering" 
+						cardIcon="mdi-silverware" 
+						:cardBody="content.menuOrder"
+						:btnObj="btnObj.menuOrder"
 						:isCardAction="false"
 						@openOverlay="showLoading(true)"
 					/>

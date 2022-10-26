@@ -28,7 +28,7 @@
 				<!-- inventory -->
 				<v-list-item @click="selectTab('dashboard')" v-if="showInventoryTab">
 					<v-icon class="ma-2">mdi-database</v-icon>
-					Inventory
+					Dashboard
 				</v-list-item>
 				<v-list-item @click="selectTab('addStock')" v-if="showInventoryTab">
 					<v-icon class="ma-2">mdi-database-plus</v-icon>
@@ -88,7 +88,7 @@
 					</a>
 				</div>
 				<div class="text-md-subtitle-2 text-subtitle-2 pt-2">
-					Last Updated: September 4, 2022
+					Last Updated: October 23, 2022
 				</div>
 			</div>
 		</v-footer>

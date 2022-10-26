@@ -71,39 +71,35 @@
 					'origin': window.location.origin
 				}
 				
-				this.$store.dispatch('getCSRFToken')
-				.then(() => {
-					this.$store.dispatch('login', obj).then(resp => {
-						this.$store.dispatch('setOverlay', false)
-						if (resp.id > 0) {
-							this.$router.push({name: 'home'})
-							this.$store.dispatch('changeToken')
+				this.$store.dispatch('login', obj).then(resp => {
+					this.$store.dispatch('setOverlay', false)
+					if (resp.id > 0) {
+						this.$router.push({name: 'home'})
+						this.$store.dispatch('changeToken')
+					}
+					else {
+						let msg = '',
+								msgType = ''
+
+						if (resp.id > -1) {
+							msgType = resp.msgType
+							msg = resp.msg
 						}
 						else {
-							let msg = '',
-									msgType = ''
-
-							if (resp.id > -1) {
-								msgType = resp.msgType
-								msg = resp.msg
-							}
-							else {
-								let response = JSON.parse(resp)
-								
-								msgType = 'error'
+							let response = JSON.parse(resp)
 							
-								for (let key in response.errors) {
-									msg += (response.errors[key] + '<br>')
-								}
+							msgType = 'error'
+						
+							for (let key in response.errors) {
+								msg += (response.errors[key] + '<br>')
 							}
-
-							this.isAlert = true
-							this.alertMsg = msg
-							this.alertType = msgType
 						}
-					})
+
+						this.isAlert = true
+						this.alertMsg = msg
+						this.alertType = msgType
+					}
 				})
-				
 			},
 			closeAlert() {
 				this.isAlert = false

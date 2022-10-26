@@ -114,13 +114,13 @@ const inventory = {
 			let respObj = { allowed: false, msg: '' }
 			await axios({
 				method: 'GET', 
-				url: rootState.baseurl + 'inventory/index',
+				url: rootState.baseurl + 'inventory',
 				headers: rootGetters.getHeaders,
 			})
 			.then(response => {
-				if (response.data.data) {
-					commit('setInventoryLinks', response.data.links)
-					commit('setInventoryData', JSON.stringify(response.data.data))
+				if (response.data) {
+					commit('setInventoryLinks', response.data[0].links)
+					commit('setInventoryData', JSON.stringify(response.data[0].data))
 					respObj.allowed = true
 				}
 				else {
@@ -141,7 +141,7 @@ const inventory = {
 				headers: rootGetters.getHeaders
 			})
 			.then(response => {
-				if (response.data.data.length) {
+				if (response.data) {
 					if (state.orderItem) {
 						commit('setOrderData', JSON.stringify(response.data.data))
 					}
@@ -154,7 +154,7 @@ const inventory = {
 						}
 					}
 					else {
-						commit('setInventoryData', JSON.stringify(response.data.data))
+						commit('setInventoryData', JSON.stringify(response.data[0].data))
 					}
 				}
 				dispatch('setOverlay', false)
@@ -168,7 +168,7 @@ const inventory = {
 			dispatch('setOverlay', true)
 			await axios({
 				method: 'GET', 
-				url: rootState.baseurl + 'inventory/get/' + id,
+				url: rootState.baseurl + 'inventory/product/' + id,
 				headers: rootGetters.getHeaders,
 			})
 			.then(response => {
@@ -207,8 +207,8 @@ const inventory = {
 			dispatch('setOverlay', true)
 			await axios({
 				method: 'POST',
-				url: rootState.baseurl + 'inventory/getStock/store',
-				data: { shoe_id: order[0], qty: order[1] },
+				url: rootState.baseurl + 'inventory/product/order',
+				data: { inventory_item_shoe_id: order[0], qty: order[1] },
 				headers: rootGetters.getHeaders,
 			})
 			.then(response => {
@@ -224,7 +224,7 @@ const inventory = {
 			let respObj = { allowed: false, msg: '' }
 			await axios({
 				method: 'GET', 
-				url: rootState.baseurl + 'inventory/orders/index',
+				url: rootState.baseurl + 'inventory/product/order',
 				headers: rootGetters.getHeaders,
 			})
 			.then(response => {
@@ -248,7 +248,7 @@ const inventory = {
 		async newItem({commit, dispatch, rootState, rootGetters}) {
 			await axios({
 				method: 'GET',
-				url: rootState.baseurl + 'inventory/product/index',
+				url: rootState.baseurl + 'inventory/product',
 				headers: rootGetters.getHeaders,
 			})
 			.then(response => {
@@ -265,7 +265,7 @@ const inventory = {
 			let respObj = { success: 0, msg: '' }
 			await axios({
 				method: 'GET',
-				url: rootState.baseurl + 'inventory/employee/logs',
+				url: rootState.baseurl + 'inventory/employee/employeelogs',
 				headers: rootGetters.getHeaders,
 			})
 			.then(response => {
@@ -287,7 +287,7 @@ const inventory = {
 		async userEdit({commit, dispatch, rootState, rootGetters}) {
 			await axios({
 				method: 'GET',
-				url: rootState.baseurl + 'inventory/employee/edit',
+				url: rootState.baseurl + 'inventory/employee/employee',
 				headers: rootGetters.getHeaders,
 			})
 			.then(response => {
@@ -308,13 +308,12 @@ const inventory = {
 			let resp = 0
 			await axios({
 				method: 'DELETE',
-				url: rootState.baseurl + 'inventory/employee/delete',
-				data: { id: userid },
+				url: rootState.baseurl + 'inventory/employee/employee/' + userid,
 				headers: rootGetters.getHeaders,
 			})
 			.then(response => {
 				if (response.data) {
-					resp = response.data.id
+					resp = response.data
 				}
 				else {
 					console.log(response.data)
@@ -322,7 +321,6 @@ const inventory = {
 			})
 			.catch(error => {
 				dispatch('checkErrorResponse', error)
-				//console.log(error)
 			})
 			return resp
 		},

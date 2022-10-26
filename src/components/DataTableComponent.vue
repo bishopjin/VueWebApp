@@ -78,7 +78,7 @@
 				this.$store.dispatch('setOverlay', true)
 				this.$store.dispatch('userSetAccess', id)
 				.then(response => {
-					if (response == parseInt(id)) {
+					if (response) {
 						this.$store.dispatch('userEdit') // eslint-disable-next-line
 						.then(response => {
 							this.$store.dispatch('setOverlay', false)
